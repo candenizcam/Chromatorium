@@ -98,7 +98,7 @@ fun SecondTest(){
                     for (k in 0 until connectionNo){
                         drawLine(
                             color = shapes[i-1].colour.generateColour(),
-                            shapes[i-1].centre.translate(2*connectionWidth*(k*2.0-connectionNo)).offset,shapes[j-1].centre.translate(2*connectionWidth*(k*2.0-connectionNo)).offset,
+                            shapes[i-1].centre.translated(2*connectionWidth*(k*2.0-connectionNo)).offset,shapes[j-1].centre.translated(2*connectionWidth*(k*2.0-connectionNo)).offset,
                             strokeWidth = connectionWidth
                         )
                     }

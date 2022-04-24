@@ -12,4 +12,24 @@ class ConnectionMatrix(val nodeNo: Int){
     operator fun set(row: Int, col: Int, n: Int){
         values[(row-1)*nodeNo+col-1] = n
     }
+
+    fun getRow(r: Int): List<Int> {
+        return (1..nodeNo).map { this[r,it] }
+    }
+
+    fun getColumn(r: Int): List<Int> {
+        return (1..nodeNo).map { this[it,r] }
+    }
+
+    fun getConnections(): MutableList<Triple<Int, Int, Int>> {
+        val l = mutableListOf<Triple<Int,Int, Int>>()
+        for(i in 1..nodeNo){
+            for(j in 1..nodeNo){
+                if(this[i,j]>0){
+                    l.add(Triple(i,j,this[i,j]))
+                }
+            }
+        }
+        return l
+    }
 }

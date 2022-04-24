@@ -17,6 +17,28 @@ class Chroma(val redDepth: Int, val greenDepth: Int, val blueDepth: Int, val red
         return Color(red = red.toFloat()/redDepth.toFloat(), green = green.toFloat()/greenDepth.toFloat(), blue = blue.toFloat()/blueDepth.toFloat())
     }
 
+    fun getBlack(): Chroma{
+        return Chroma(redDepth,greenDepth,blueDepth,0,0,0)
+    }
+
+    fun getWhite(): Chroma{
+        return Chroma(redDepth,greenDepth,blueDepth,redDepth,greenDepth,blueDepth)
+    }
+
+    val ratedRed: Float
+        get() {
+            return red.toFloat()/redDepth.toFloat()
+        }
+
+    val ratedGreen: Float
+        get() {
+            return green.toFloat()/greenDepth.toFloat()
+        }
+
+    val ratedBlue: Float
+        get() {
+            return blue.toFloat()/blueDepth.toFloat()
+        }
 
 
 
@@ -30,11 +52,17 @@ class Chroma(val redDepth: Int, val greenDepth: Int, val blueDepth: Int, val red
     }
 
     override fun equals(other: Any?): Boolean {
+
         return super.equals(other)
     }
 
     fun equals(other: Chroma): Boolean {
         return (red==other.red).and(green==other.green).and(blue == other.blue)
+    }
+
+    override fun toString(): String {
+        return generateColour().toString()
+
     }
 
     companion object{
@@ -45,10 +73,16 @@ class Chroma(val redDepth: Int, val greenDepth: Int, val blueDepth: Int, val red
                 return black
             }
             val normalized = vector.map { it.toFloat()/s }
-            for (i in chromas.indices) {
-                black = chromas[i].linSum(black,normalized[i])
+            var r = 0.0f
+            var g  =0.0f
+            var b = 0.0f
+            normalized.forEachIndexed { index, fl ->
+                r += chromas[index].red*fl
+                g += chromas[index].green*fl
+                b += chromas[index].blue*fl
+
             }
-            return black
+            return Chroma(chromas[0].redDepth,chromas[0].greenDepth,chromas[0].blueDepth, r.toInt(),g.toInt(),b.toInt())
 
 
         }
