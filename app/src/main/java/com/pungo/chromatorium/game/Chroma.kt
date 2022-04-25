@@ -1,6 +1,8 @@
 package com.pungo.chromatorium.game
 
+import android.graphics.ColorSpace
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import kotlin.math.roundToInt
 
 /** This class controls colour affairs in the game
@@ -39,6 +41,21 @@ class Chroma(val redDepth: Int, val greenDepth: Int, val blueDepth: Int, val red
         get() {
             return blue.toFloat()/blueDepth.toFloat()
         }
+
+    val hexString: String
+    get() {
+        return "#"+Integer.toHexString(generateColour().toArgb()).removeRange(0..1)
+    }
+
+    val rgbFloatString: String
+    get() {
+        return "%.2f".format(ratedRed) + ", " + "%.2f".format(ratedGreen) + ", " + "%.2f".format(ratedBlue)
+    }
+
+    val rgbIntString: String
+    get(){
+        return "${(ratedRed*255).toInt()}, ${(ratedGreen*255).toInt()}, ${(ratedBlue*255).toInt()}"
+    }
 
 
 
