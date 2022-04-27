@@ -6,7 +6,12 @@ class Line(val p1: Point, val p2: Point) {
     val a: Double
     val b: Double
     init {
-        a = (p1.y - p2.y)/(p1.x - p2.x)
+        val d  = if(p1.x - p2.x == 0.0){
+            0.000001
+        }else{
+            (p1.x - p2.x)
+        }
+        a = (p1.y - p2.y)/d
         b = p1.y- a*p1.x
     }
 

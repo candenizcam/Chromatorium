@@ -31,11 +31,11 @@ import kotlin.math.roundToInt
 
 @Composable
 fun ThirdTest() {
-    val level by remember{mutableStateOf(Level("", Level.ColorTextFormat.FLOAT))}
+    val level by remember{mutableStateOf(Level("", Level.ColorTextFormat.HEX))}
     //val level = Level("")
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        level.draw( 0f,0f,LocalConfiguration.current.screenWidthDp.toFloat(),LocalConfiguration.current.screenHeightDp.toFloat())
+        level.draw( LocalConfiguration.current.screenWidthDp.toFloat(),LocalConfiguration.current.screenHeightDp.toFloat())
     }
 
 

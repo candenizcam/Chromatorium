@@ -26,9 +26,8 @@ class Level(s: String, val colorTextFormat: ColorTextFormat){
     val levelItems = mutableListOf<LevelItem>()
     val levelGrid: LevelGrid
     val connectionMatrix: ConnectionMatrix
-    val levelColor: Chroma
     init {
-        levelGrid= LevelGrid(5,3)
+        levelGrid= LevelGrid(8,5)
         val colourDepth = 16
         val colours = listOf(
             Chroma(colourDepth, colourDepth,0,0),
@@ -43,14 +42,14 @@ class Level(s: String, val colorTextFormat: ColorTextFormat){
         )
         val centres = listOf(
             Pair(1,1),
-            Pair(2,3),
-            Pair(3,2),
+            Pair(3,3),
+            Pair(3,1),
             Pair(5,2)
         )
         val mutables = listOf(
             false, false, true, true
         )
-        levelColor = Chroma(colourDepth,(colourDepth*0.25f).roundToInt(),0,(colourDepth*0.75f).roundToInt())
+        val levelColor = Chroma(colourDepth,(colourDepth*0.25f).roundToInt(),0,(colourDepth*0.75f).roundToInt())
         val targetColour = listOf(
             null, null, null, levelColor
         )
@@ -58,7 +57,7 @@ class Level(s: String, val colorTextFormat: ColorTextFormat){
 
         for(i in colours.indices){
             levelItems.add(
-                LevelItem(shapes[i], colours[i],centres[i].first,centres[i].second, 0.6f, 0.5f, mutables[i],targetColour[i] )
+                LevelItem(shapes[i], colours[i],centres[i].first,centres[i].second, 0.3f, 0.3f, mutables[i],targetColour[i] )
             )
         }
 
@@ -143,7 +142,7 @@ class Level(s: String, val colorTextFormat: ColorTextFormat){
 
 
     @Composable
-    fun draw(left: Float, top: Float, width: Float, height: Float){
+    fun draw( width: Float, height: Float){
         val drawWidth = levelGrid.gridWidth(width,height)
         val drawHeight  = drawWidth/levelGrid.widthToHeight
 
@@ -223,10 +222,14 @@ class Level(s: String, val colorTextFormat: ColorTextFormat){
         Box(modifier = Modifier
             .size(drawWidth.dp, drawHeight.dp)
             .then(dm)){
-            levelGrid.Checkerboard(Color(0xFF061626), Color(0xFF160626))
+            levelGrid.Checkerboard(Color(0xFF4061626), Color(0xFF160626))
+            //levelGrid.Checkerboard(Color(0xFF4000BB), Color(0xFF4000BB))
 
 
-            Canvas(modifier = Modifier.fillMaxSize()){
+            Canvas(modifier = Modifier.size(drawWidth.dp, drawHeight.dp)){
+
+
+
 
                 if(selectedIndex>=0) {
                     drawLine(
@@ -274,7 +277,7 @@ class Level(s: String, val colorTextFormat: ColorTextFormat){
                     val y = levelGrid.verticalPoint(it.r,this.size.height)
                     val x = levelGrid.horizontalPoint(it.c,this.size.width)
 
-                    drawPath(it.shape.getPath(Point(x,y),levelGrid.singleSide(drawWidth)*it.radius), color = it.chroma.generateColour())
+                    drawPath(it.shape.getPath(Point(x,y),levelGrid.singleSide(this.size.width)*it.radius), color = it.chroma.generateColour())
                     val contour = if(!it.mutable){
                         it.chroma.generateColour()
                     }else if(it.targetColour!=null){
@@ -283,21 +286,24 @@ class Level(s: String, val colorTextFormat: ColorTextFormat){
                         it.chroma.getBlack().generateColour()
                     }
 
-                    drawPath(it.shape.getPath(Point(x,y),levelGrid.singleSide(drawWidth)*it.radius), color = contour, style = Stroke(width=8f))
+                    drawPath(it.shape.getPath(Point(x,y),levelGrid.singleSide(this.size.width)*it.radius), color = contour, style = Stroke(width=8f))
 
+
+                    // uncomment next line to see hitboxes
+                    // drawCircle(it.chroma.generateColour(),levelGrid.singleSide(this.size.width)*it.hitBox,Point(x,y).offset, style = Stroke(width=4f)  )
 
 
                     val s = colorTextFormat.chromaText(it.chroma)
                     if(s!=""){
 
-                        drawText(drawContext, s, x, y+levelGrid.singleSide(drawWidth)*it.radius*1.5f,
+                        drawText(drawContext, s, x, y+levelGrid.singleSide(this.size.width)*it.radius*1.5f,
                             color= it.chroma.getWhite().generateColour(),
                             typeface = ResourcesCompat.getFont(context , com.pungo.chromatorium.R.font.breeserifregular))
 
                         if(it.targetColour!=null){
                             val tc = it.targetColour!!
                             val s = colorTextFormat.chromaText(tc)
-                            drawText(drawContext, s, x, y-levelGrid.singleSide(drawWidth)*it.radius*1.4f,
+                            drawText(drawContext, s, x, y-levelGrid.singleSide(this.size.width)*it.radius*1.4f,
                                 color= tc.generateColour(),
                                 typeface = ResourcesCompat.getFont(context , com.pungo.chromatorium.R.font.breeserifregular))
                         }
@@ -320,11 +326,13 @@ class Level(s: String, val colorTextFormat: ColorTextFormat){
             override fun chromaText(c: Chroma): String {
                 return c.hexString
             }
-        }, FLOAT {
+        },
+        FLOAT {
             override fun chromaText(c: Chroma): String {
                 return c.rgbFloatString
             }
-        }, INT {
+        },
+        INT {
             override fun chromaText(c: Chroma): String {
                 return c.rgbIntString
             }

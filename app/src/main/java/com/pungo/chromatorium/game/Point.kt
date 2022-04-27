@@ -30,4 +30,8 @@ class Point(val x: Double, val y: Double){
     fun length(): Double {
         return kotlin.math.sqrt((x).pow(2.0) + (y).pow(2.0))
     }
+
+    override fun toString(): String {
+        return "Point: x: " + "%.2f".format(x) + ", y: " + "%.2f".format(y)
+    }
 }
