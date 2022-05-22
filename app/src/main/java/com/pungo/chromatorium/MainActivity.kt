@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
+import com.pungo.chromatorium.fourthTest.FourthTest
 import com.pungo.chromatorium.ui.theme.ChromatoriumTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,7 +19,8 @@ class MainActivity : ComponentActivity() {
 
             //DragTest()
             //SecondTest()
-            ThirdTest()
+            //ThirdTest()
+            FourthTest()
 
         }
     }
