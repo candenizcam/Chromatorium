@@ -14,6 +14,27 @@ class CardLink(val from: Int, val to: Int) {
     private val leds = mutableListOf<Point>()
     var state = 0 // 0-> closed, 1-> from2to, 2->to2from
         private set
+    var colour: Chromini = Chromini(0,0,0)
+    val begins: Int
+        get() {
+            return if(state==1){
+                from
+            }else if(state==2){
+                to
+            }else{
+                -1
+            }
+        }
+    val ends: Int
+        get() {
+            return if(state==1){
+                to
+            }else if(state==2){
+                from
+            }else{
+                -1
+            }
+        }
 
 
     fun nextState(){
@@ -67,6 +88,7 @@ class CardLink(val from: Int, val to: Int) {
         }else{
             Color.Black
         }
+
         lines.forEach {
 
             val p1 = it.p1.scale(this.size.width,this.size.height)
@@ -86,7 +108,7 @@ class CardLink(val from: Int, val to: Int) {
 
             leds.forEach {
                 drawCircle(
-                    c,
+                    colour.generateColour(),
                     UniversalConstants.smallLedRadius,
                    it.scale(this.size.width,this.size.height).offset
                 )

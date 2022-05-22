@@ -106,6 +106,20 @@ class CardLevel() {
 
         }
 
+
+        for (i in links.indices){
+            val thisLink = links[i]
+
+
+            thisLink.colour = if(thisLink.begins==-1) {
+                Chromini(0.2f,0.2f,0.2f)
+            }else{
+                nodes[thisLink.begins-1].displayColour
+            }
+
+
+        }
+
     }
 
     @Composable
