@@ -1,4 +1,4 @@
-package com.pungo.chromatorium.game
+package com.pungo.chromatorium.tools
 
 import androidx.compose.ui.geometry.Offset
 import kotlin.math.pow

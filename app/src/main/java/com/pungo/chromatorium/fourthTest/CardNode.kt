@@ -1,10 +1,15 @@
 package com.pungo.chromatorium.fourthTest
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.ColorFilter.Companion.colorMatrix
+import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.DrawScopeMarker
-import com.pungo.chromatorium.game.Point
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.VectorPainter
+import com.pungo.chromatorium.tools.Point
 
 /** Card note corresponds to an item of significance
  * other node dwellers can be inherited from this main class
@@ -23,22 +28,69 @@ open class CardNode(val x: Float, val y: Float) {
     }
 
 
-    open fun draw(ds: DrawScope){
-        ds.drawNode()
+    open fun draw(ds: DrawScope,  painter: Painter){
+        ds.drawNode(  painter)
     }
 
 
 
 
-    fun DrawScope.drawNode(){
+    fun DrawScope.drawNode( painter: Painter){
         val v = normalPoint.scale(this.size.width,this.size.width)
         val w = this.size.width
         val h = this.size.height
+
+        val generatedColour = displayColour.generateColour()
+        val lighter  = displayColour.times(1.1).generateColour()
+        val darker  = displayColour.times(0.8).generateColour()
+
+
         drawCircle(
-            color = displayColour.generateColour(),
+            color = Color.White,
             radius = UniversalConstants.largeLedRadius,
             center = normalPoint.scale(this.size.width,this.size.height).offset
         )
+
+
+        val tp = normalPoint.scale(this.size.width,this.size.height).translated(-UniversalConstants.largeLedRadius,-UniversalConstants.largeLedRadius)
+
+        translate(tp.x.toFloat(),tp.y.toFloat()){
+            with(painter) {
+
+                draw(Size(2*UniversalConstants.largeLedRadius,2*UniversalConstants.largeLedRadius),
+                colorFilter = tint(
+                    generatedColour,
+                    blendMode = BlendMode.Modulate
+                ))
+            }
+
+        }
+
+
+
+
+
+
+
+        /*
+        val b  = Brush.radialGradient(
+            0.0f to lighter,
+            0.5f to generatedColour,
+            0.8f to generatedColour,
+            0.85f to darker,
+            //0.9f to generatedColour,
+            center = normalPoint.scale(this.size.width,this.size.height).offset,
+            radius = UniversalConstants.largeLedRadius,
+
+            )
+
+        drawCircle(
+            brush = b,
+            radius = UniversalConstants.largeLedRadius,
+            center = normalPoint.scale(this.size.width,this.size.height).offset
+        )
+
+         */
     }
 
 }

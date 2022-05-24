@@ -1,8 +1,9 @@
 package com.pungo.chromatorium.fourthTest
 
+import com.pungo.chromatorium.tools.Rectangle
 import java.util.StringJoiner
 
-class CardEllipse( x: Float, y: Float, colourString: String): CardNode(x,y) {
+class CardEllipse( x: Float, y: Float, colourString: String, textRect: Rectangle?=null): CardNode(x,y) {
     val assignedColour: Chromini?
     init {
         val a = Chromini.fromHex(colourString)

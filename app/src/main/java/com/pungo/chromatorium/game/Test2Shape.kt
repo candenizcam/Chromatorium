@@ -2,11 +2,10 @@ package com.pungo.chromatorium.game
 
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Path
+import com.pungo.chromatorium.tools.Point
 
 
-
-
-class Test2Shape(val sideNumber: Int, val centre: Point,var colour: Chroma, var radius: Double, val mutable: Boolean=false){
+class Test2Shape(val sideNumber: Int, val centre: Point, var colour: Chroma, var radius: Double, val mutable: Boolean=false){
     fun getPath(): Path {
         if(sideNumber>2){
             val step = 2* Math.PI /sideNumber

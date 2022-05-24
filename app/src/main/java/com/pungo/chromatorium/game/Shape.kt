@@ -2,6 +2,7 @@ package com.pungo.chromatorium.game
 
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Path
+import com.pungo.chromatorium.tools.Point
 
 /** This class holds information about the shape, since hit logic & colour is handled elsewhere this is mostly for drawing things
  * while it technically holds some information, it should not be considered as a data class, certainly not for geometry

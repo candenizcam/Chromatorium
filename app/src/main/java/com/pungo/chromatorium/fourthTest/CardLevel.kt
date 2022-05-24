@@ -1,19 +1,26 @@
 package com.pungo.chromatorium.fourthTest
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import com.pungo.chromatorium.game.Point
+import com.pungo.chromatorium.R
+import com.pungo.chromatorium.tools.Point
 import com.pungo.chromatorium.tools.Matrix
 
 /** This class contains information and operations about the level on the highest level, it should delegate as much as it can
@@ -23,6 +30,7 @@ import com.pungo.chromatorium.tools.Matrix
 class CardLevel() {
     val nodes = mutableListOf<CardNode>()
     val links = mutableListOf<CardLink>()
+    val drawLineTapHitbox = false
     var cardLevelGrid = CardLevelGrid(0,0)
     init {
 
@@ -122,6 +130,21 @@ class CardLevel() {
 
     }
 
+
+    fun allPoints(): MutableList<Point> {
+        val xRes = 100
+        val yRes = 100
+        val pl = mutableListOf<Point>()
+        for(i in 0..xRes){
+            for(j in 0..yRes){
+
+                pl.add(Point(i/xRes.toDouble(), j/yRes.toDouble()))
+
+            }
+        }
+        return pl
+    }
+
     @Composable
     fun draw(frameWidth: Float, frameHeight: Float){
         val (drawWidth, drawHeight) = cardLevelGrid.fitInto(frameWidth,frameHeight)
@@ -129,6 +152,24 @@ class CardLevel() {
         //var closestPoints = remember {
         //    mutableStateListOf<Point>()
         //}
+        drawBackground()
+
+        val lineTapDistance = 0.1
+        val pl = allPoints()
+
+
+        var c = listOf<Pair<Boolean, Point>>()
+        if(drawLineTapHitbox){
+            c = pl.map {p->
+                val distances = links.map {
+                    Pair(it.distance(p),it)
+                }
+                val (closestDistance, closestLine) = distances.minByOrNull { it.first }!!
+                Pair(closestDistance<lineTapDistance, p)
+
+            }
+        }
+
 
 
         val dm = dragModifier(
@@ -143,6 +184,8 @@ class CardLevel() {
                 }
                 firstPoint = Point(x,y)
                 updateColours()
+
+
                 //closestPoints.clear()
                 //val points = links.forEach() {
 
@@ -168,15 +211,35 @@ class CardLevel() {
         )
 
 
+        val ledIB  =ImageBitmap.imageResource(
+            res = LocalContext.current.resources,
+            id = R.drawable.led_1
+        )
+
+
+        val pr = painterResource(id = R.drawable.ic_subtraction_3)
+
+
+
+
+
+
         Box(modifier = Modifier
-            .background(Color(3, 40, 67))
+
             .padding(cardLevelGrid.padding.dp)
             .size(drawWidth.dp, drawHeight.dp)
             .then(dm)
+            .background(
+                Color(
+                    100, 100, 100, 50
+                )
+            )
 
             ){
             //levelGrid.Checkerboard(Color(0xFF4000BB), Color(0xFF4000BB))
             //cardLevelGrid.drawGrid(10)
+
+
 
 
             Canvas(modifier = Modifier.size((drawWidth).dp, (drawHeight).dp)){
@@ -187,14 +250,29 @@ class CardLevel() {
                 }
 
                 nodes.forEach {
-                    it.draw(this)
+                    it.draw(this, pr)
                 }
 
 
-                drawCircle(Color.Red,
+
+
+                drawCircle(Color.Transparent,
                     25f,
 
                     firstPoint.scale(this.size.width,this.size.height).offset)
+
+
+                if(drawLineTapHitbox){
+                    c.forEach {
+                        drawCircle(
+                            if(it.first) Color.Green else Color.Blue,
+                            2f,
+                            it.second.scale(this.size.width,this.size.height).offset
+                        )
+
+                    }
+                }
+
 
                 /*
                                closestPoints.forEach {
@@ -294,6 +372,27 @@ class CardLevel() {
 
                  */
             }
+        }
+    }
+
+    @Composable
+    fun drawBackground(){
+        val infiniteTransition = rememberInfiniteTransition()
+        val value by infiniteTransition.animateFloat(
+            initialValue =0.0f,
+            targetValue = 1.0f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(36000,easing = FastOutLinearInEasing),
+                repeatMode = RepeatMode.Restart
+            )
+        )
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Chromini
+                    .fromHSV(value, 0.7f, 0.15f)
+                    .generateColour()
+            )){
         }
     }
 

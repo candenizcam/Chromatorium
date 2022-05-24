@@ -1,5 +1,7 @@
 package com.pungo.chromatorium.game
 
+import com.pungo.chromatorium.tools.Point
+
 /** This class holds information about objects in a level
  * shape: a class that is used to draw the item (has a method for path), won't change in level
  * chroma: a class that holds information about colour, and its associated needs will change in level

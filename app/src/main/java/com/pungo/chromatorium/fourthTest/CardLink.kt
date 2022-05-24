@@ -2,11 +2,8 @@ package com.pungo.chromatorium.fourthTest
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import com.pungo.chromatorium.game.Line
-import com.pungo.chromatorium.game.Point
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
+import com.pungo.chromatorium.tools.Line
+import com.pungo.chromatorium.tools.Point
 
 class CardLink(val from: Int, val to: Int) {
     private val points = mutableListOf<Point>() // 0f to 1f
@@ -45,7 +42,7 @@ class CardLink(val from: Int, val to: Int) {
         }
     }
 
-    fun setPoints(newPoints: List<Point>,leds: List<Point>){
+    fun setPoints(newPoints: List<Point>, leds: List<Point>){
         points.clear()
         lines.clear()
         this.leds.clear()

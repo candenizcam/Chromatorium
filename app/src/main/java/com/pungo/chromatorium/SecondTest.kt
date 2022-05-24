@@ -14,7 +14,7 @@ import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import com.pungo.chromatorium.game.Chroma
 import com.pungo.chromatorium.game.ConnectionMatrix
-import com.pungo.chromatorium.game.Point
+import com.pungo.chromatorium.tools.Point
 import com.pungo.chromatorium.game.Test2Shape
 
 @Composable
@@ -26,7 +26,7 @@ fun SecondTest(){
         Chroma(colourDepth,0,0,colourDepth),
         Chroma(colourDepth,colourDepth,colourDepth,colourDepth),
         Chroma(colourDepth,colourDepth,colourDepth,colourDepth))
-    val centres = listOf(Point(100.0,100.0), Point(500.0,100.0), Point(250.0,300.0),Point(250.0,500.0))
+    val centres = listOf(Point(100.0,100.0), Point(500.0,100.0), Point(250.0,300.0), Point(250.0,500.0))
 
 
     val shapes = (centres.indices).map { Test2Shape(6,centres[it],colours[it], radius = radius, it in listOf(2,3)) }

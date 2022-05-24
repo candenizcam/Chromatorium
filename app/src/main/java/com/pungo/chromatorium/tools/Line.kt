@@ -1,11 +1,11 @@
-package com.pungo.chromatorium.game
+package com.pungo.chromatorium.tools
 
 import kotlin.math.sign
 
 class Line(val p1: Point, val p2: Point) {
     val a: Double
     val b: Double
-    val special: Line.Special
+    val special: Special
     init {
         if(p1.y - p2.y == 0.0){
             special = Special.HORIZONTAL
@@ -29,26 +29,26 @@ class Line(val p1: Point, val p2: Point) {
 
     fun yFromX(x: Double): Double {
         return when(special){
-            Special.NONE->a*x + b
-            Special.VERTICAL->a*x + b
-            Special.HORIZONTAL->b
+            Special.NONE ->a*x + b
+            Special.VERTICAL ->a*x + b
+            Special.HORIZONTAL ->b
         }
 
     }
 
     fun xFromY(y: Double): Double{
         return when(special){
-            Special.NONE->(y-b)/a
-            Special.VERTICAL->(y-b)/a
-            Special.HORIZONTAL->(y-b)/a
+            Special.NONE ->(y-b)/a
+            Special.VERTICAL ->(y-b)/a
+            Special.HORIZONTAL ->(y-b)/a
         }
     }
 
-    fun pointFromX(x: Double): Point{
+    fun pointFromX(x: Double): Point {
         return Point(x,yFromX(x))
     }
 
-    fun pointFromY(y: Double): Point{
+    fun pointFromY(y: Double): Point {
         return Point(xFromY(y),y)
     }
 
@@ -82,9 +82,9 @@ class Line(val p1: Point, val p2: Point) {
 
         //val x = (p.x+p.y - a*b)/(1 + a*a)
         val closestPoint = when(special){
-            Special.NONE->pointFromX(x)
-            Special.VERTICAL->Point(p1.x,p.y)
-            Special.HORIZONTAL->Point(p.x,b)
+            Special.NONE ->pointFromX(x)
+            Special.VERTICAL -> Point(p1.x,p.y)
+            Special.HORIZONTAL -> Point(p.x,b)
         }
 
 

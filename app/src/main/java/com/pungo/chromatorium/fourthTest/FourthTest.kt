@@ -21,7 +21,7 @@ fun FourthTest() {
     var loaded by remember {
         mutableStateOf(false)
     }
-    BatchReader.batchReader(path = "batches/inp_Chroma_2.txt" ){
+    BatchReader.batchReader(path = "batches/inp_Chroma_3.txt" ){
         scope.launch {
             level.value = it
             loaded = true

@@ -1,8 +1,9 @@
 package com.pungo.chromatorium.fourthTest
 
 import androidx.compose.runtime.Composable
-import com.pungo.chromatorium.game.Point
+import com.pungo.chromatorium.tools.Point
 import com.pungo.chromatorium.tools.ReadDataFileWithCallback
+import com.pungo.chromatorium.tools.Rectangle
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -15,20 +16,25 @@ object BatchReader {
                 NodeClass(it)
             }
 
-            val minX = nodeClasses.minOf { it.x}
-            val maxX = nodeClasses.maxOf { it.x}
-            val minY = nodeClasses.minOf { it.y }
-            val maxY = nodeClasses.maxOf { it.y}
+            val minX = nodeClasses.minOf { it.x} - 10
+            val maxX = nodeClasses.maxOf { it.x} + 10
+            val minY = nodeClasses.minOf { it.y } - 50
+            val maxY = nodeClasses.maxOf { it.y} + 50
             val width = maxX-minX
             val height = maxY - minY
 
+            val textRects = lines[1].split(";").map { TextRect(it) }
+
+
             val ellipse = nodeClasses.map {
-                CardEllipse((it.x - minX)/width, (it.y - minY)/height, it.colourString)
+                val r = textRects.first {tr-> it.strokeColour == it.strokeColour  }
+
+                CardEllipse((it.x - minX)/width, (it.y - minY)/height, it.colourString, r.rect)
             }
 
 
 
-            val links = lines[1].split(";").map {
+            val links = lines[2].split(";").map {
                 val splits = it.split(":")
                 if(splits[0]=="lin"){
 
@@ -96,10 +102,20 @@ object BatchReader {
         }
     }
 
+    class TextRect(s: String){
+        val strokeColour: String
+        val rect: Rectangle
+        init {
+            val (type, strokeCol, dims) = s.split(":")
+            strokeColour = strokeCol
+            rect = Rectangle.fromIntString(dims)
+        }
+    }
 
     class NodeClass(s: String){
         var type: String
         var colourString: String
+        var strokeColour: String
         var strokeWidth: Int
         var x: Float
         var y: Float
@@ -109,7 +125,8 @@ object BatchReader {
 
             if (nodeType == "ell") {
                 type = nodeType
-                colourString = colour
+                colourString = colour.split(",")[0]
+                strokeColour = colour.split(",")[1]
                 strokeWidth = stroke.toInt()
                 val (x_in, y_in, diametre) = dimentions.split(",")
                 x = x_in.toFloat() +  diametre.toFloat()/2

@@ -4,10 +4,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import com.pungo.chromatorium.game.Point
+import com.pungo.chromatorium.tools.Point
 
 /** This class contains the information for the grid in a level
  * it also hold various conventions for conversion between normalized and squared grid

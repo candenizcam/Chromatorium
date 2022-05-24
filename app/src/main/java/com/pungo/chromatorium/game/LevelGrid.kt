@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import com.pungo.chromatorium.tools.Point
 
 class LevelGrid(val rows: Int, val cols: Int){
     val widthToHeight: Float
@@ -31,7 +32,7 @@ class LevelGrid(val rows: Int, val cols: Int){
         return height/rows.toFloat()*(r-0.5f)
     }
 
-    fun gridToRatedCoordinates(p: Point) : Point{
+    fun gridToRatedCoordinates(p: Point) : Point {
         return p.scale(1f/cols.toFloat(), 1f/rows.toFloat())
     }
 
