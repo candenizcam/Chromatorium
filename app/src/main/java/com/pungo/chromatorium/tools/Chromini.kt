@@ -1,4 +1,4 @@
-package com.pungo.chromatorium.fourthTest
+package com.pungo.chromatorium.tools
 
 import androidx.compose.ui.graphics.Color
 import kotlin.math.abs
@@ -22,7 +22,10 @@ class Chromini
     constructor(color: Color): this(color.red,color.green,color.blue)
 
 
-
+    val rgbIntString: String
+        get(){
+            return "${(red*255).toInt()}, ${(green*255).toInt()}, ${(blue*255).toInt()}"
+        }
 
     fun generateColour(): Color {
         return Color(red = red, green = green, blue = blue)
@@ -37,7 +40,7 @@ class Chromini
         return Chromini(red - other.red, green-other.green, blue - other.blue)
     }
 
-    operator fun times(other: Double): Chromini{
+    operator fun times(other: Double): Chromini {
         return Chromini((red*other).toFloat(),(green*other).toFloat(),(blue*other).toFloat())
     }
 
@@ -51,6 +54,12 @@ class Chromini
     override fun toString(): String {
         return "${(red*255).roundToInt()},${(green*255).roundToInt()},${(blue*255).roundToInt()}"
     }
+
+    fun toFloatString(): String{
+        return "%.2f".format(red) + ", " + "%.2f".format(green) + ", " + "%.2f".format(blue)
+    }
+
+
 
 
 
@@ -66,7 +75,7 @@ class Chromini
 
         }
 
-        fun fromHSV(h: Float, s: Float, v: Float): Chromini{
+        fun fromHSV(h: Float, s: Float, v: Float): Chromini {
 
             val hue = h.coerceIn(0.0f..1.0f)
             val saturation = s.coerceIn(0.0f..1.0f)

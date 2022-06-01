@@ -10,16 +10,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.res.ResourcesCompat
 import com.pungo.chromatorium.R
+import com.pungo.chromatorium.tools.Chromini
 import com.pungo.chromatorium.tools.Point
 import com.pungo.chromatorium.tools.Matrix
 
@@ -60,7 +59,17 @@ class CardLevel() {
         var connections = Matrix(nodes.size,nodes.size)
 
         links.forEach {
+            if((it.state==1).or( it.state==2)){
+                val weight = if((nodes.firstOrNull {it2-> it2.id == it.begins   }!! as CardEllipse).assignedColour!=null) 1.0 else 0.5
+                connections[nodes.indexOfFirst {it2-> it2.id == it.begins   },nodes.indexOfFirst {it2-> it2.id == it.ends  }] = weight
+            }
+        }
+
+        /*
+        links.forEach {
             if(it.state==1){
+                nodes.firstOrNull {it2-> it2.id == it.begins   }!!
+
                 val weight = if((nodes[it.from-1] as CardEllipse).assignedColour!=null) 1.0 else 0.5
 
                 connections[it.from,it.to] = weight
@@ -70,6 +79,8 @@ class CardLevel() {
                 connections[it.to,it.from] = weight
             }
         }
+
+         */
 
 
 
@@ -119,10 +130,12 @@ class CardLevel() {
             val thisLink = links[i]
 
 
-            thisLink.colour = if(thisLink.begins==-1) {
+            thisLink.colour = if(thisLink.begins=="-1") {
                 Chromini(0.2f,0.2f,0.2f)
             }else{
-                nodes[thisLink.begins-1].displayColour
+                nodes.firstOrNull { it2-> it2.id == thisLink.begins }!!.displayColour
+
+                //nodes[thisLink.begins-1].displayColour
             }
 
 
@@ -217,8 +230,8 @@ class CardLevel() {
         )
 
 
-        val pr = painterResource(id = R.drawable.ic_subtraction_3)
-
+        val pr = painterResource(id = R.drawable.ic_group_10)
+        val f = ResourcesCompat.getFont(LocalContext.current , R.font.baijamjureemedium)
 
 
 
@@ -250,7 +263,7 @@ class CardLevel() {
                 }
 
                 nodes.forEach {
-                    it.draw(this, pr)
+                    it.draw(this, pr, f!!)
                 }
 
 
@@ -465,14 +478,14 @@ class CardLevel() {
                     val sl = it.split(",")
                     //CardNode(cl.cardLevelGrid.ratedX(sl[0].toInt()),cl.cardLevelGrid.ratedY(sl[1].toInt()))
                     val (a,b) = cl.cardLevelGrid.ratedPair(sl[0].toInt(),sl[1].toInt())
-                    CardNode(a,b)
+                    CardNode("1",a,b)
                 }
             )
 
             cl.links.addAll(
                 links.map {
                     val sl = it.split(",")
-                    CardLink(sl[0].toInt(),sl[1].toInt())
+                    CardLink(sl[0],sl[1])
                 }
             )
 

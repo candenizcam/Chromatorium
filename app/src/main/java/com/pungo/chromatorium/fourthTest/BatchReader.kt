@@ -9,11 +9,66 @@ import kotlin.math.roundToInt
 
 object BatchReader {
     @Composable
+    fun dataReader(path: String, callback: (String)->Unit={}){
+        ReadDataFileWithCallback(path){
+            callback(it)
+        }
+    }
+
+    fun stringToClasses(text: String): List<LevelData> {
+        val lines = text.lines()
+        val nodeClasses = lines[0].split(";").map {
+            EllipseData(it)
+        }
+        val decorEll = lines[1].split(";").map {
+            DecorEllipseData(it)
+        }
+
+        val textRects = lines[2].split(";").map {
+            TextRectData(it)
+        }
+
+        val lins = lines[3].split(";").map {
+            LineData(it)
+        }
+
+        val decLins = lines[4].split(";").map {
+            DecorLine(it)
+        }
+
+        val opacities = nodeClasses.map { it.opacity }.distinct().sorted().reversed()
+
+        val levels = opacities.map { i->
+
+
+            LevelData(100-i,
+                    nodeClasses.filter { it.opacity== i},
+                    textRects.filter { it.opacity== i},
+                    lins.filter { it.opacity== i}
+                )
+        }
+
+        return levels
+
+
+
+
+
+
+    }
+
+
+    /*
+    @Composable
     fun batchReader(path: String, callback: ( CardLevel)->Unit={}){
         ReadDataFileWithCallback(path){
             val lines = it.lines()
+            //ell, decor, hxg, lin, declin
             val nodeClasses = lines[0].split(";").map {
-                NodeClass(it)
+                EllipseData(it)
+            }
+            val textRects = lines[2].split(";").map {
+                TextRectData(it)
             }
 
             val minX = nodeClasses.minOf { it.x} - 10
@@ -23,18 +78,20 @@ object BatchReader {
             val width = maxX-minX
             val height = maxY - minY
 
-            val textRects = lines[1].split(";").map { TextRect(it) }
+
 
 
             val ellipse = nodeClasses.map {
-                val r = textRects.first {tr-> it.strokeColour == it.strokeColour  }
+                val r = textRects.first {tr-> tr.strokeColour == it.strokeColour  }.rect
 
-                CardEllipse((it.x - minX)/width, (it.y - minY)/height, it.colourString, r.rect)
+                val rc = Rectangle((r.x + it.width/2 - minX)/width, (r.y+ it.width/2  - minY)/height,r.w/width, r.h/height)
+
+                CardEllipse((it.x - minX)/width, (it.y - minY)/height, it.colourString, rc)
             }
 
 
 
-            val links = lines[2].split(";").map {
+            val links = lines[3].split(";").map {
                 val splits = it.split(":")
                 if(splits[0]=="lin"){
 
@@ -102,41 +159,253 @@ object BatchReader {
         }
     }
 
-    class TextRect(s: String){
-        val strokeColour: String
-        val rect: Rectangle
+     */
+
+    class LevelData(val no: Int,
+                    val ellipse: List<EllipseData>,
+                    val textRect: List<TextRectData>,
+                    val lineData: List<LineData>){
+        val minLeft: Float
+        val maxRight: Float
+        val minTop: Float
+        val maxBottom: Float
+        val width: Float
+        val height: Float
+        val ellipses: List<CardEllipse>
+        val lines: List<CardLink>
         init {
-            val (type, strokeCol, dims) = s.split(":")
-            strokeColour = strokeCol
-            rect = Rectangle.fromIntString(dims)
+            val margin = textRect.maxOf { it.rect.h }.toFloat() *3f
+            val e1 = ellipse.minOf { it.left }
+            val e2 = textRect.minOf { it.left }
+
+            val relLin = lineData.filter { it.intermediatePoints.size>0 }
+
+            minLeft = listOf( ellipse.minOf { it.left },textRect.minOf { it.left }, relLin.minOfOrNull { it.left }).filterNotNull() .minOf { it } - margin
+            maxRight = listOf( ellipse.maxOf { it.right }, textRect.maxOf { it.right }, relLin.minOfOrNull { it.right } ).filterNotNull().maxOf { it } + margin
+            minTop = listOf( ellipse.minOf { it.top },textRect.minOf { it.top }, relLin.minOfOrNull { it.top } ).filterNotNull().minOf { it } - margin
+            maxBottom = listOf( ellipse.maxOf { it.bottom },textRect.maxOf { it.bottom }, relLin.minOfOrNull{ it.bottom } ).filterNotNull().maxOf { it } + margin
+            width = maxRight - minLeft
+            height = maxBottom - minTop
+
+            ellipses = ellipse.map {
+                val r = textRect.first {tr-> tr.strokeColour == it.strokeColour  }.rect
+                val rc = Rectangle((r.x + it.width/2 - minLeft)/width, (r.y+ it.width/2  - minTop)/height,r.w/width, r.h/height)
+                CardEllipse(it.id,(it.x - minLeft)/width, (it.y - minTop)/height, it.colourString, rc)
+            }
+
+            lines = lineData.map {ld->
+                val rawPoints = mutableListOf<Point>()
+                val f = ld.from
+                val ids = ellipse.map { it.id + " sc: " + it.strokeColour + " op: " + it.opacity }
+                println("level no: " + no.toString())
+                println(f + ld.s)
+                println(ids )
+
+                rawPoints.add(ellipses.first { it.id == ld.from  }.normalPoint)
+
+                ld.intermediatePoints.map {
+                    rawPoints.add(it.translated(-minLeft,-minTop).rate(width,height))
+                }
+                rawPoints.add(ellipses.first { it.id == ld.to  }.normalPoint)
+
+
+                val leds = mutableListOf<Point>()
+                val dec = rawPoints.map { it.scale(width,height) }
+                for (i in 0 until dec.size-1){
+                    val w = abs(dec[i].x- dec[i+1].x)
+                    val h = abs(dec[i].y- dec[i+1].y)
+
+                    if(h>w){
+                        val stepNo = (h/10).roundToInt()
+                        val alpha = 1f/stepNo.toDouble()
+                        for(j in 0..stepNo.toInt()){
+                            leds.add(dec[i].sum(dec[i+1],(alpha*j)))
+                        }
+                    }else{
+                        val stepNo = w/10
+                        val alpha = 1f/stepNo
+                        for(j in 0..stepNo.toInt()){
+                            leds.add(dec[i].sum(dec[i+1],(alpha*j)))
+                        }
+                    }
+                }
+
+
+                CardLink(ld.from,ld.to).also {
+                    it.setPoints(rawPoints,leds)
+                }
+
+            }
+
+
+
+        }
+
+
+
+
+    }
+
+    class DecorLine(s: String){
+        var opacity: Int
+        var to: String
+        var from: String
+        var intermediatePoints = mutableListOf<String>()
+        init {
+            //declin:50:fr.2,to.1:150,160:130,180:130,320:180,360;
+            val splits = s.split(":")
+            opacity = splits[1].toInt()
+            splits[2].split(",").also {
+                from = it[0].split(".")[1]
+                to = it[1].split(".")[1]
+            }
+            if(splits.size>3){
+                for(i in 3 until splits.size){
+                    intermediatePoints.add(splits[i]  )
+                }
+
+
+            }
+
         }
     }
 
-    class NodeClass(s: String){
+    class DecorEllipseData(s: String){
+        var x: Float
+        var y: Float
+        var width: Float
+        var colour: String
+        var opacity: Int
+        var id: String
+        init {
+            // decor:#FFFFFF:50:260,340,40;
+            val (type, colourIn, opacityIn, dims) = s.split(":")
+            id = type.split(".")[1]
+            colour = colourIn
+            opacity = opacityIn.toInt()
+            val (x_in, y_in, diametre) = dims.split(",")
+            x = x_in.toFloat() +  diametre.toFloat()/2
+            y = y_in.toFloat()+  diametre.toFloat()/2
+            width = diametre.toFloat()
+        }
+    }
+
+    class LineData(val s: String){
+        var opacity: Int
+        var to: String
+        var from: String
+        var intermediatePoints = mutableListOf<Point>()
+        init {
+            // lin:99:fr.2,to.1;lin:99:fr.2,to.3:140,60;lin:99:fr.3,to.1:220,100:150,100:100,150:100,300;
+            val splits = s.split(":")
+            opacity = splits[1].toInt()
+            splits[2].split(",").also {
+                from = it[0].split(".")[1]
+                to = it[1].split(".")[1]
+            }
+            if(splits.size>3){
+                for(i in 3 until splits.size){
+                    intermediatePoints.add(Point(splits[i])  )
+                }
+
+
+            }
+
+        }
+
+
+        // warning, these do not include ellipses, so they cant be used alone
+        val left: Float
+            get() {
+                return intermediatePoints.minOf { it.x }.toFloat()
+            }
+        val right: Float
+            get() {
+                return intermediatePoints.maxOf { it.x }.toFloat()
+            }
+        val top: Float
+            get() {
+                return intermediatePoints.minOf { it.y }.toFloat()
+            }
+        val bottom: Float
+            get() {
+                return intermediatePoints.maxOf { it.y }.toFloat()
+            }
+
+    }
+
+    class TextRectData(s: String){
+        var strokeColour: String
+        val rect: Rectangle
+        var opacity: Int
+        init {
+            val (type, strokeColourIn, opacityIn, dims) = s.split(":")
+            opacity = opacityIn.toInt()
+            strokeColour = strokeColourIn
+            rect = Rectangle.fromIntString(dims)
+        }
+
+        val left: Float
+            get() {
+                return rect.x.toFloat()
+            }
+        val right: Float
+            get() {
+                return (rect.x + rect.w).toFloat()
+            }
+        val top: Float
+            get() {
+                return rect.y.toFloat()
+            }
+        val bottom: Float
+            get() {
+                return (rect.y + rect.h).toFloat()
+            }
+    }
+
+    class EllipseData(s: String){
         var type: String
+        var id: String
         var colourString: String
         var strokeColour: String
         var strokeWidth: Int
         var x: Float
         var y: Float
         var width: Float
+        var opacity: Int
         init {
-            val (nodeType, colour, stroke, dimentions) = s.split(":")
-
-            if (nodeType == "ell") {
-                type = nodeType
-                colourString = colour.split(",")[0]
-                strokeColour = colour.split(",")[1]
-                strokeWidth = stroke.toInt()
-                val (x_in, y_in, diametre) = dimentions.split(",")
-                x = x_in.toFloat() +  diametre.toFloat()/2
-                y = y_in.toFloat()+  diametre.toFloat()/2
-                width = diametre.toFloat()
-            } else {
-                throw Exception("Unknown type")
-            }
+            //ell:#800000,#010200:99:5:40,320,40;
+            val (nodeType, colour, opacityIn ,stroke, dimentions) = s.split(":")
+            type = nodeType
+            id = type.split(".")[1]
+            colourString = colour.split(",")[0]
+            strokeColour = colour.split(",")[1]
+            strokeWidth = stroke.toInt()
+            opacity = opacityIn.toInt()
+            val (x_in, y_in, diametre) = dimentions.split(",")
+            x = x_in.toFloat() +  diametre.toFloat()/2
+            y = y_in.toFloat()+  diametre.toFloat()/2
+            width = diametre.toFloat()
 
         }
+
+        val left: Float
+        get() {
+            return x - width/2f
+        }
+        val right: Float
+            get() {
+                return x + width/2f
+            }
+        val top: Float
+            get() {
+                return x - width/2f
+            }
+        val bottom: Float
+            get() {
+                return x + width/2f
+            }
+
     }
 
 }

@@ -21,7 +21,41 @@ fun FourthTest() {
     var loaded by remember {
         mutableStateOf(false)
     }
-    BatchReader.batchReader(path = "batches/inp_Chroma_3.txt" ){
+    var batchString = remember {
+        mutableStateOf("")
+    }
+
+    var levels = listOf< BatchReader.LevelData>()
+
+    BatchReader.dataReader(path = "batches/inp_Chroma_5.txt"){
+        batchString.value = it
+        loaded = true
+    }
+
+    if(batchString.value!=""){
+        levels = BatchReader.stringToClasses(batchString.value)
+
+        scope.launch {
+
+            level.value = CardLevel.fromBatchReader(
+                levels[0].height.toInt(),
+                levels[0].width.toInt(),
+                levels[0].ellipses,
+                levels[0].lines
+            )
+            loaded = true
+        }
+
+
+
+
+    }
+
+
+
+
+    /*
+    BatchReader.batchReader(path = "batches/inp_Chroma_4.txt" ){
         scope.launch {
             level.value = it
             loaded = true
@@ -29,7 +63,7 @@ fun FourthTest() {
 
     }
 
-
+ */
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
         if (loaded){
             level.value.draw(frameWidth = LocalConfiguration.current.screenWidthDp.toFloat(), frameHeight = LocalConfiguration.current.screenHeightDp.toFloat())
@@ -37,6 +71,8 @@ fun FourthTest() {
 
         //level.draw( LocalConfiguration.current.screenWidthDp.toFloat(), LocalConfiguration.current.screenHeightDp.toFloat())
     }
+
+
 
 
 

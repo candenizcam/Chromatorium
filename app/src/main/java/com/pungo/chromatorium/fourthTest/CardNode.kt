@@ -1,14 +1,13 @@
 package com.pungo.chromatorium.fourthTest
 
+import android.graphics.Typeface
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.ColorFilter.Companion.colorMatrix
 import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.VectorPainter
+import com.pungo.chromatorium.tools.Chromini
 import com.pungo.chromatorium.tools.Point
 
 /** Card note corresponds to an item of significance
@@ -17,7 +16,7 @@ import com.pungo.chromatorium.tools.Point
  * x, y: are position variables, given between 0f and 1f, y is from the top
  * it also comes with its own drawer (that draws to a canvas, cool huh?)
  */
-open class CardNode(val x: Float, val y: Float) {
+open class CardNode(val id: String, val x: Float, val y: Float) {
     val normalPoint = Point(x,y)
     var displayColour = Chromini.white
         protected set
@@ -28,25 +27,30 @@ open class CardNode(val x: Float, val y: Float) {
     }
 
 
-    open fun draw(ds: DrawScope,  painter: Painter){
-        ds.drawNode(  painter)
+    open fun draw(ds: DrawScope,  painter: Painter, font: Typeface){
+
+        ds.drawNode(  painter, font)
     }
 
 
 
 
-    fun DrawScope.drawNode( painter: Painter){
+    open fun DrawScope.drawNode( painter: Painter, font: Typeface){
         val v = normalPoint.scale(this.size.width,this.size.width)
         val w = this.size.width
         val h = this.size.height
 
         val generatedColour = displayColour.generateColour()
-        val lighter  = displayColour.times(1.1).generateColour()
-        val darker  = displayColour.times(0.8).generateColour()
 
 
         drawCircle(
-            color = Color.White,
+            color = generatedColour,
+            radius = UniversalConstants.largeLedRadius,
+            center = normalPoint.scale(this.size.width,this.size.height).offset
+        )
+
+        drawCircle(
+            color = Color(0f,0f,0f,0.5f),
             radius = UniversalConstants.largeLedRadius,
             center = normalPoint.scale(this.size.width,this.size.height).offset
         )
@@ -60,6 +64,7 @@ open class CardNode(val x: Float, val y: Float) {
                 draw(Size(2*UniversalConstants.largeLedRadius,2*UniversalConstants.largeLedRadius),
                 colorFilter = tint(
                     generatedColour,
+                    //generatedColour,
                     blendMode = BlendMode.Modulate
                 ))
             }

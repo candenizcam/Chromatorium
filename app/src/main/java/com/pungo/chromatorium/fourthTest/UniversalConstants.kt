@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 object UniversalConstants {
 
     val smallLedRadius= 8f
-    val largeLedRadius = 22f
+    val largeLedRadius = 36f
 
     @Composable
     fun widthScaled(f: Float): Float {

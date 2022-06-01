@@ -6,10 +6,10 @@ import androidx.compose.ui.platform.LocalContext
 import java.io.InputStream
 
 @Composable
-fun ReadDataFileWithCallback(path: String, callback: (String)->Unit={}){
+fun ReadDataFileWithCallback(path: String, launchKey: Boolean=true, callback: (String)->Unit={}){
 
     val context = LocalContext.current
-    LaunchedEffect(true) {
+    LaunchedEffect(launchKey) {
         kotlin.runCatching {
             val inputStream: InputStream = context.assets.open(path)
             val size: Int = inputStream.available()

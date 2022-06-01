@@ -2,34 +2,35 @@ package com.pungo.chromatorium.fourthTest
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import com.pungo.chromatorium.tools.Chromini
 import com.pungo.chromatorium.tools.Line
 import com.pungo.chromatorium.tools.Point
 
-class CardLink(val from: Int, val to: Int) {
+class CardLink(val from: String, val to: String) {
     private val points = mutableListOf<Point>() // 0f to 1f
     private val lines = mutableListOf<Line>()
     private val leds = mutableListOf<Point>()
     var state = 0 // 0-> closed, 1-> from2to, 2->to2from
         private set
     var colour: Chromini = Chromini(0,0,0)
-    val begins: Int
+    val begins: String
         get() {
             return if(state==1){
                 from
             }else if(state==2){
                 to
             }else{
-                -1
+                "-1"
             }
         }
-    val ends: Int
+    val ends: String
         get() {
             return if(state==1){
                 to
             }else if(state==2){
                 from
             }else{
-                -1
+                "-1"
             }
         }
 
