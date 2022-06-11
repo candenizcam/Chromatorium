@@ -73,7 +73,7 @@ class RawEllipseData(s: String){
 
         return LevelData.LevelEllipseData(
             id = this.id,
-            strokeWidth = this.strokeWidth,
+            nodeType = NodeType.fromString(strokeWidth),
             fillColour = this.fillColour,
             centre = Point(adjusted_centre_x, adjusted_centre_y),
             diametre = diametre.toDouble() / width.toDouble(),

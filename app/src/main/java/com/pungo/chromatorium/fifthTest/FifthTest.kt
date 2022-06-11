@@ -56,12 +56,15 @@ fun FifthTest() {
         Box(modifier = Modifier
             .fillMaxSize()
 
+                /*
             .clickable {
                 activeLevel += 1
                 if (activeLevel >= levelSetOpener.gameLevels.size) {
                     activeLevel = 0
                 }
             }
+
+                 */
 
                 ,
             contentAlignment = Alignment.TopCenter

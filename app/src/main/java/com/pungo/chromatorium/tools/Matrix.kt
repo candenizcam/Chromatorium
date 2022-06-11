@@ -55,7 +55,7 @@ open class Matrix(val values: MutableList<Double>, val rowNo: Int, val colNo: In
      *
      */
     fun powerSeriesSum(n:Int): Matrix {
-        if(rowNo!=colNo) Exception("Warning, this function only works for square matrices")
+        if(rowNo!=colNo) Exception("Error, this function only works for square matrices")
         var u = Matrix(rowNo,colNo)
         var powerHolder = Matrix.unitMatrix(rowNo)
         for (i in 1..n){

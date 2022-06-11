@@ -1,6 +1,7 @@
 package com.pungo.chromatorium.tools
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -25,6 +26,10 @@ class Chromini
     val rgbIntString: String
         get(){
             return "${(red*255).toInt()}, ${(green*255).toInt()}, ${(blue*255).toInt()}"
+        }
+    val hexString: String
+        get() {
+            return "#"+Integer.toHexString(generateColour().toArgb()).removeRange(0..1)
         }
 
     fun generateColour(): Color {
