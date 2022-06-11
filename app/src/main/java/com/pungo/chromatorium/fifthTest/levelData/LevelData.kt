@@ -1,9 +1,8 @@
-package com.pungo.chromatorium.fifthTest.levelOpener
+package com.pungo.chromatorium.fifthTest.levelData
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawContext
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.DrawScopeMarker
+import com.pungo.chromatorium.fifthTest.levelOpener.NodeType
 import com.pungo.chromatorium.tools.Line
 import com.pungo.chromatorium.tools.Point
 import com.pungo.chromatorium.tools.Rectangle
@@ -17,19 +16,20 @@ class LevelData(val levelNo: String, val width: Int, val height: Int, val levelE
         return Size(width,height)
     }
 
-    class LevelLineData(val fromId: String, val toId: String, val points:  List<Point>, val allPoints: List<Point>){
-        fun getLines(): List<Line> {
-            return (1 until points.size).map {
-                Line(points[it-1],points[it])
-            }
-        }
+
+
+
+
+
+
+
+    fun ellipseFromId(id: String): LevelEllipseData {
+        return levelEllipses.firstOrNull {it.id == id }!!
     }
 
-    class DecorLineData(val fromId: String, val toId: String, val points:  List<Point>)
-
-    class LevelEllipseData(val id: String, val nodeType: NodeType, val fillColour: String, val centre: Point, val diametre: Double, val textRect: Rectangle)
-
-    class DecorEllipseData(val centre: Point, val diametre: Double)
+    fun lineFromId(id1: String, id2: String): LevelLineData{
+        return levelLines.firstOrNull { (it.fromId == id1 && it.toId == id2).or(it.fromId == id2 && it.toId == id1) }!!
+    }
 
 
     fun closestEllipseOrNull(p: Point): LevelEllipseData? {

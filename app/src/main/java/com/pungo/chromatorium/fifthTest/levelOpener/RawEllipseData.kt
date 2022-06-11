@@ -1,5 +1,8 @@
 package com.pungo.chromatorium.fifthTest.levelOpener
 
+import com.pungo.chromatorium.fifthTest.levelData.DecorEllipseData
+import com.pungo.chromatorium.fifthTest.levelData.LevelData
+import com.pungo.chromatorium.fifthTest.levelData.LevelEllipseData
 import com.pungo.chromatorium.tools.Point
 import com.pungo.chromatorium.tools.Rectangle
 import kotlin.math.max
@@ -44,7 +47,7 @@ class RawEllipseData(s: String){
 
     }
 
-    fun getDecorEllipse(left: Int, top: Int, width: Int, height: Int): LevelData.DecorEllipseData? {
+    fun getDecorEllipse(left: Int, top: Int, width: Int, height: Int): DecorEllipseData? {
         if(this.right<left || this.left> left+height || this.bottom < top || this.bottom> top+height){
             // outside the level area
             return null
@@ -52,13 +55,13 @@ class RawEllipseData(s: String){
 
         val adjusted_centre_x = (centre_x.toDouble() - left.toDouble())/width.toDouble()
         val adjusted_centre_y = (centre_y.toDouble() - top.toDouble())/height.toDouble()
-        return LevelData.DecorEllipseData(
+        return DecorEllipseData(
             Point(adjusted_centre_x, adjusted_centre_y),
             diametre.toDouble() / width.toDouble()
         )
     }
 
-    fun getLevelEllipse(left: Int, top: Int, width: Int, height: Int): LevelData.LevelEllipseData {
+    fun getLevelEllipse(left: Int, top: Int, width: Int, height: Int): LevelEllipseData {
         val doubleWidth = width.toDouble()
         val doubleHeight = height.toDouble()
         val adjusted_centre_x = (centre_x.toDouble() - left.toDouble())/doubleWidth
@@ -71,7 +74,7 @@ class RawEllipseData(s: String){
         val textRect = Rectangle(textRect_x,textRect_y,textWidth,textHeight)
 
 
-        return LevelData.LevelEllipseData(
+        return LevelEllipseData(
             id = this.id,
             nodeType = NodeType.fromString(strokeWidth),
             fillColour = this.fillColour,

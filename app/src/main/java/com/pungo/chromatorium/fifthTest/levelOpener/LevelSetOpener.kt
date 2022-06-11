@@ -1,6 +1,10 @@
 package com.pungo.chromatorium.fifthTest.levelOpener
 
 import com.pungo.chromatorium.fifthTest.GameLevel
+import com.pungo.chromatorium.fifthTest.levelData.DecorEllipseData
+import com.pungo.chromatorium.fifthTest.levelData.DecorLineData
+import com.pungo.chromatorium.fifthTest.levelData.LevelData
+import com.pungo.chromatorium.fifthTest.levelData.LevelEllipseData
 import com.pungo.chromatorium.tools.Size
 
 class LevelSetOpener() {
@@ -19,9 +23,9 @@ class LevelSetOpener() {
         val levelDataList = mutableListOf<LevelData>()
         for(i in levels.indices){
             val thisLevelRaw = levels[i]
-            var levelEllipses = listOf<LevelData.LevelEllipseData>()
-            val decorEllipses = mutableListOf<LevelData.DecorEllipseData>()
-            val decorLines = mutableListOf<LevelData.DecorLineData>()
+            var levelEllipses = listOf<LevelEllipseData>()
+            val decorEllipses = mutableListOf<DecorEllipseData>()
+            val decorLines = mutableListOf<DecorLineData>()
             for (j in levels.indices){
                 if(i==j){
                     levelEllipses = levels[i].getLevelEllipses()

@@ -1,5 +1,6 @@
 package com.pungo.chromatorium.fifthTest.levelOpener
 
+import com.pungo.chromatorium.fifthTest.levelData.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -29,18 +30,18 @@ class RawLevelData(ellipseLine: String, lineLine: String){
         height = bottom-top
     }
 
-    fun getLevelEllipses(): List<LevelData.LevelEllipseData> {
+    fun getLevelEllipses(): List<LevelEllipseData> {
         return theseEllipses.map { it.getLevelEllipse(left, top, width,height) }
     }
 
-    fun getLevelLines(): List<LevelData.LevelLineData>{
+    fun getLevelLines(): List<LevelLineData>{
         return theseLines.map { it.getLevelLine(left, top, width,height) }
     }
 
     /** Returns empty list if there is nothing
      *
      */
-    fun getDecorEllipses(left: Int, top: Int, width: Int, height: Int): List<LevelData.DecorEllipseData> {
+    fun getDecorEllipses(left: Int, top: Int, width: Int, height: Int): List<DecorEllipseData> {
         if(this.right<left || this.bottom < top || this.left> left+width || this.top> top+height){
             // level size don't overlap, automatic fail
             return listOf()
@@ -49,7 +50,7 @@ class RawLevelData(ellipseLine: String, lineLine: String){
         return theseEllipses.mapNotNull { it.getDecorEllipse(left, top, width, height) }
     }
 
-    fun getDecorLines(left: Int, top: Int, width: Int, height: Int): List<LevelData.DecorLineData> {
+    fun getDecorLines(left: Int, top: Int, width: Int, height: Int): List<DecorLineData> {
         return theseLines.mapNotNull { it.getDecorLine(left, top, width, height) }
     }
 

@@ -1,8 +1,10 @@
 package com.pungo.chromatorium.fifthTest.levelOpener
 
+import com.pungo.chromatorium.fifthTest.levelData.DecorLineData
+import com.pungo.chromatorium.fifthTest.levelData.LevelData
+import com.pungo.chromatorium.fifthTest.levelData.LevelLineData
 import com.pungo.chromatorium.tools.Line
 import com.pungo.chromatorium.tools.Point
-import com.pungo.chromatorium.tools.Rectangle
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -108,22 +110,22 @@ class RawLineData(s: String){
 
     }
 
-    fun getLevelLine(left: Int, top: Int, width: Int, height: Int): LevelData.LevelLineData {
+    fun getLevelLine(left: Int, top: Int, width: Int, height: Int): LevelLineData {
         val levelPoints = getCorners(left,top,width,height)
         val allPoints = getAllPoints(left,top,width,height)
 
 
-        return LevelData.LevelLineData(fromId, toId, levelPoints, allPoints)
+        return LevelLineData(fromId, toId, levelPoints, allPoints)
 
     }
 
-    fun getDecorLine(left: Int, top: Int, width: Int, height: Int): LevelData.DecorLineData? {
+    fun getDecorLine(left: Int, top: Int, width: Int, height: Int): DecorLineData? {
         val decorPoints = getCorners(left,top,width,height)
 
         val d = decorPoints.any { (it.x in 0.0..1.0) || (it.y in 0.0..1.0) }
 
         return if(d){
-            LevelData.DecorLineData(fromId, toId, decorPoints)
+            DecorLineData(fromId, toId, decorPoints)
         }else{
             null
         }

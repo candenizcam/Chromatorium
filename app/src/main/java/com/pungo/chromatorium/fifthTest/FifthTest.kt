@@ -76,7 +76,17 @@ fun FifthTest() {
                 .fillMaxSize()
                 .background(Color.Black), contentAlignment = Alignment.BottomCenter) {
                 //Text(text = "loaded")
-                levelSetOpener.gameLevels[activeLevel].draw()
+                if(levelSetOpener.gameLevels[activeLevel].levelCompleted.value){
+                    activeLevel += 1
+                    if (activeLevel >= levelSetOpener.gameLevels.size) {
+                        activeLevel = 0
+                    }
+                    levelSetOpener.gameLevels[activeLevel].resetLevel()
+                }else{
+                    levelSetOpener.gameLevels[activeLevel].draw()
+                }
+
+
             }
 
             Box(modifier = Modifier.height(120.dp).fillMaxWidth().background(Color.Black), contentAlignment = Alignment.Center){
