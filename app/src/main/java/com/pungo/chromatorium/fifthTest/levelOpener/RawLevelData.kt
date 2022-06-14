@@ -4,7 +4,7 @@ import com.pungo.chromatorium.fifthTest.levelData.*
 import kotlin.math.max
 import kotlin.math.min
 
-class RawLevelData(ellipseLine: String, lineLine: String){
+class RawLevelData(ellipseLine: String, lineLine: String, paddingCoeff: Float = 9.0f/4.0f){
     val levelNo: String
     val left: Int
     val top: Int
@@ -19,12 +19,12 @@ class RawLevelData(ellipseLine: String, lineLine: String){
         theseLines = lineLine.split(";").map { RawLineData(it) }
         levelNo = (100 - theseEllipses[0].opacity.toInt()).toString()
 
-        val padding = theseEllipses[0].text_height.toInt()
+        val padding = (theseEllipses[0].text_height.toInt() * paddingCoeff).toInt()
 
-        left = min(theseEllipses.minOf { it.left }, theseLines.minOf { it.left }) - padding*3
-        top = min(theseEllipses.minOf { it.top }, theseLines.minOf { it.top  }) - padding*3
-        right = max(theseEllipses.maxOf { it.right  }, theseLines.maxOf { it.right  }) + padding*3
-        bottom = max(theseEllipses.maxOf { it.bottom }, theseLines.maxOf { it.bottom }) + padding*3
+        left = min(theseEllipses.minOf { it.left }, theseLines.minOf { it.left }) - padding
+        top = min(theseEllipses.minOf { it.top }, theseLines.minOf { it.top  }) - padding
+        right = max(theseEllipses.maxOf { it.right  }, theseLines.maxOf { it.right  }) + padding
+        bottom = max(theseEllipses.maxOf { it.bottom }, theseLines.maxOf { it.bottom }) + padding
 
         width = right-left
         height = bottom-top

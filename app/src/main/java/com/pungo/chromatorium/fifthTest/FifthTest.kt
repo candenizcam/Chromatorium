@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,9 +27,10 @@ fun FifthTest() {
             LevelSetOpener()
         )
     }
-    var activeLevel by remember {
-        mutableStateOf(-1)
+    var activeLevel by rememberSaveable{
+        mutableStateOf(0)
     }
+
     val screenSize = Size(LocalConfiguration.current.screenWidthDp, LocalConfiguration.current.screenHeightDp-120 )
 
 
@@ -36,30 +38,30 @@ fun FifthTest() {
         levelSetOpener.deploy(it)
         levelSetOpener.generateGameLevels(screenSize)
         loadedString = true
-        activeLevel = 0
+        //activeLevel = 0
     }
 
-
-    if(loadedString){
-
-
-
-
-    }
 
     LaunchedEffect(Unit) {
         while(true) {
             delay(50)
-            if(activeLevel!=-1){
+            try {
                 levelSetOpener.gameLevels[activeLevel].blingHolders.forEach { it.nextLight() }
                 levelSetOpener.gameLevels[activeLevel].blingHolders.removeAll { it.garbage }
+
+            }catch (_: Exception){
+
             }
 
         }
     }
 
 
-    if(activeLevel==-1){
+
+
+
+
+    if(!loadedString){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(text = "loading")
         }
@@ -69,15 +71,7 @@ fun FifthTest() {
         Box(modifier = Modifier
             .fillMaxSize()
 
-                /*
-            .clickable {
-                activeLevel += 1
-                if (activeLevel >= levelSetOpener.gameLevels.size) {
-                    activeLevel = 0
-                }
-            }
 
-                 */
 
                 ,
             contentAlignment = Alignment.TopCenter
@@ -88,20 +82,9 @@ fun FifthTest() {
             Box(modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black), contentAlignment = Alignment.BottomCenter) {
-                //Text(text = "loaded")
-                /*
-                if(levelSetOpener.gameLevels[activeLevel].levelCompleted.value){
-                    activeLevel += 1
-                    if (activeLevel >= levelSetOpener.gameLevels.size) {
-                        activeLevel = 0
-                    }
-                    levelSetOpener.gameLevels[activeLevel].resetLevel()
-                }else{
-
-                }
-
-                 */
-                levelSetOpener.gameLevels[activeLevel].draw()
+                
+                drawGameV(gameLevel = levelSetOpener.gameLevels[activeLevel])
+                //levelSetOpener.gameLevels[activeLevel].draw(levelSetOpener.gameLevels[activeLevel].levelData)
 
             }
 
@@ -116,7 +99,14 @@ fun FifthTest() {
                     main_text += " moves: ${levelSetOpener.gameLevels[activeLevel].moveCounter.value}"
 
                 }
-                Text(text = main_text,color = Color.White, fontSize = 24.sp)
+                Column() {
+                    Text(text = main_text,color = Color.White, fontSize = 24.sp)
+
+
+                }
+
+
+
             }
 
 
@@ -126,20 +116,34 @@ fun FifthTest() {
                     Column(
                         Modifier
                             .size(300.dp, 300.dp)
-                            .background(Color(0.2f, 0.4f, 0.3f))) {
+                            .background(Color(0.2f, 0.4f, 0.3f))
+
+                    ) {
                         Text(text = "Level Complete",color = Color.White, fontSize = 24.sp)
 
-                        Box(Modifier
-                            .background(Color(0.4f, 0.5f, 0.4f))
-                            .clickable {
-                                activeLevel += 1
-                                if (activeLevel >= levelSetOpener.gameLevels.size) {
-                                    activeLevel = 0
+                        Box(
+                            Modifier
+                                .background(Color(0.4f, 0.5f, 0.4f))
+                                .clickable {
+                                    activeLevel += 1
+                                    if (activeLevel >= levelSetOpener.gameLevels.size) {
+                                        activeLevel = 0
+                                    }
+                                    levelSetOpener.gameLevels[activeLevel].resetLevel()
                                 }
-                                levelSetOpener.gameLevels[activeLevel].resetLevel()
-                            }
                         ) {
                             Text(text = "Next Level",color = Color.White, fontSize = 24.sp)
+                        }
+
+                        Box(
+                            Modifier
+                                .background(Color(0.4f, 0.5f, 0.4f))
+                                .clickable {
+
+                                    levelSetOpener.gameLevels[activeLevel].resetLevel()
+                                }
+                        ) {
+                            Text(text = "Restart",color = Color.White, fontSize = 24.sp)
                         }
                     }
                 }
@@ -150,6 +154,8 @@ fun FifthTest() {
         }
 
     }
+
+
 
 
 

@@ -74,7 +74,7 @@ class LevelData(val levelNo: String, val width: Int, val height: Int, val levelE
     fun DrawScope.drawDecorContext(){
         decorEllipses.forEach {
             drawCircle(
-                color = Color(0.05f,0.05f,0.05f),
+                color = Color(0.85f,0.85f,0.85f,.1f),
                 radius = (it.diametre*this.size.width).toFloat()/2f,
                 center = it.centre.scale(this.size.width,this.size.height).offset
             )
@@ -83,7 +83,7 @@ class LevelData(val levelNo: String, val width: Int, val height: Int, val levelE
         decorLines.forEach {
             for (i in 1 until it.points.size){
                 drawLine(
-                    color = Color(0.05f,0.05f,0.05f),
+                    color = Color(0.85f,0.85f,0.85f,.1f),
                     it.points[i-1].scale(this.size.width,this.size.height).offset,
                     it.points[i].scale(this.size.width,this.size.height).offset,
                     strokeWidth = 5f

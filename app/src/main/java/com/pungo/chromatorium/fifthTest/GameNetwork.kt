@@ -10,7 +10,7 @@ class GameNetwork(chrominiList: List<String>, val typeList: List<NodeType>) {
     var relationsMatrix = Matrix(networkSize,networkSize)
     var borderList = chrominiList.indices.map {
         when(typeList[it]){
-            NodeType.NONE ->{ null}
+            NodeType.NONE ->{ Chromini.white}
             else ->{Chromini.fromHex(chrominiList[it])}
         }
     }
