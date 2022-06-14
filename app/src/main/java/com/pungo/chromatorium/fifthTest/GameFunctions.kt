@@ -102,11 +102,14 @@ fun drawGameV(gameLevel: GameLevel){
                 if (it!=null){
                     if(startIndex.value!=it.id){
                         val relLine = levelData.lineFromId(startIndex.value,it.id)
-                        val startIndexValue = startIndex
+                        val startIndexValue = startIndex.value
                         gameLevel.addBlinger(
-                            BlingHolder(relLine,startIndex.value,it.id, 1 ){
+                            BlingHolder(relLine,startIndexValue,it.id, 1 ){
                                 gameLevel.moveCounter.value += 1
-                                gameNetwork.connect(gameLevel.ellipseIdIndex(startIndexValue.value), gameLevel.ellipseIdIndex(it.id))
+                                val id1 = gameLevel.ellipseIdIndex(startIndexValue)
+                                val id2 =  gameLevel.ellipseIdIndex(it.id)
+
+                                gameNetwork.connect(id1,id2)
                                 gameLevel.updateColours()
                             }
                         )
@@ -118,9 +121,8 @@ fun drawGameV(gameLevel: GameLevel){
     )
 
     Box(modifier = Modifier
-        .background(Color.Black)
         .size(gameLevel.levelSize.width.dp, gameLevel.levelSize.height.dp)){
-        drawBackground(.9f, .15f)
+
         levelCanvas(context,gameLevel ,dm, dragging.value, touchStartPoint.value,touchEndPoint.value)
     }
 }
@@ -133,7 +135,7 @@ fun BoxScope.levelCanvas(context: Context, gameLevel: GameLevel, dm: Modifier, d
     Canvas(modifier = Modifier
         .fillMaxSize()
         .then(if (gameLevel.levelCompleted.value) Modifier else dm)
-        .clipToBounds()
+        //.clipToBounds()
     ){
         levelData.drawDecor(this)
         val defLineColour = Color(0.9f,.9f,.9f)

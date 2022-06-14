@@ -16,7 +16,7 @@ class BlingHolder(val line: LevelLineData, val firstId: String, val secondId: St
     fun nextLight(){
 
         lit.value+= abs(step)
-        if (lit.value==line.allPoints.size){
+        if (lit.value>=line.allPoints.size){
             finished()
             garbage = true
         }

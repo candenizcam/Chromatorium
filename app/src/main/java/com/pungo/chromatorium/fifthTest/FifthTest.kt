@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import com.pungo.chromatorium.fifthTest.levelOpener.LevelSetOpener
 import com.pungo.chromatorium.tools.ReadDataFileWithCallback
 import com.pungo.chromatorium.tools.Size
+import com.pungo.chromatorium.tools.drawBackground
 import kotlinx.coroutines.delay
 
 @Composable
@@ -31,7 +32,10 @@ fun FifthTest() {
         mutableStateOf(0)
     }
 
-    val screenSize = Size(LocalConfiguration.current.screenWidthDp, LocalConfiguration.current.screenHeightDp-120 )
+    val hudTop = 200
+
+
+    val screenSize = Size(LocalConfiguration.current.screenWidthDp, LocalConfiguration.current.screenHeightDp-hudTop)
 
 
     ReadDataFileWithCallback(path = "batches/inp_Chroma_6.txt"){
@@ -78,10 +82,11 @@ fun FifthTest() {
         ) {
 
 
+            drawBackground(.9f, .15f)
 
             Box(modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black), contentAlignment = Alignment.BottomCenter) {
+                , contentAlignment = Alignment.BottomCenter) {
                 
                 drawGameV(gameLevel = levelSetOpener.gameLevels[activeLevel])
                 //levelSetOpener.gameLevels[activeLevel].draw(levelSetOpener.gameLevels[activeLevel].levelData)
@@ -89,9 +94,9 @@ fun FifthTest() {
             }
 
             Box(modifier = Modifier
-                .height(120.dp)
+                .height(hudTop.dp)
                 .fillMaxWidth()
-                .background(Color.Black), contentAlignment = Alignment.Center){
+                , contentAlignment = Alignment.Center){
                 var main_text = "level ${activeLevel+1}"
                 if(levelSetOpener.gameLevels[activeLevel].levelCompleted.value){
                     main_text += " complete"
