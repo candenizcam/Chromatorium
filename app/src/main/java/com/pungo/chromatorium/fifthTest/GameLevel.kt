@@ -45,6 +45,7 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
             it.nodeType
         }
     )
+    var moveCounter = mutableStateOf(0)
     var levelCompleted = mutableStateOf(false)
 
     init {
@@ -121,6 +122,7 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
     fun resetLevel(){
         gameNetwork.resetConnections()
         levelCompleted.value = false
+        moveCounter.value = 0
     }
     fun levelComplete(): Boolean {
         var complete = true
@@ -186,133 +188,97 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
         val dragging = remember{ mutableStateOf(false) }
 
 
-        val dm = remember {
-            mutableStateOf(
-                dragModifier(
-                    firstContact = {x,y->
-                        levelData.closestEllipseOrNull(Point(x,y)).let {
-                            if (it!=null){
-                                touchStartPoint.value = Point(it.centre.x,it.centre.y)
-                                touchEndPoint.value = Point(x,y)
-                                startIndex.value = it.id
-                            }else{
-                                val lin = levelData.closestLineOrNull(Point(x,y))
-                                if(lin!= null){
-                                    //gameNetwork.cutConnection(ellipseIdIndex(lin.toId),ellipseIdIndex(lin.fromId))
-                                    val fw = gameNetwork.relationsMatrix[ ellipseIdIndex(lin.fromId)+1, ellipseIdIndex(lin.toId)+1  ]!=0.0
-                                    val bw = gameNetwork.relationsMatrix[  ellipseIdIndex(lin.toId)+1 ,ellipseIdIndex(lin.fromId)+1 ]!=0.0
 
-                                    if (bw.xor(fw)){
-                                        val (thisId, otherId) = if (fw){
-                                            Pair(lin.fromId, lin.toId)
-                                        }else{
-                                            Pair(lin.toId, lin.fromId)
-                                        }
+        val dm = dragModifier(
+            firstContact = {x,y->
+                levelData.closestEllipseOrNull(Point(x,y)).let {
+                    if (it!=null){
+                        touchStartPoint.value = Point(it.centre.x,it.centre.y)
+                        touchEndPoint.value = Point(x,y)
+                        startIndex.value = it.id
 
-                                        //val otherIndex = if(lin.fromId == startIndex.value) lin.toId  else lin.fromId
-
-                                        addBlinger(
-                                            BlingHolder(lin,thisId, otherId, -1 ){
-
-                                            }
-                                        )
-
-                                        gameNetwork.cutConnection(ellipseIdIndex(thisId), ellipseIdIndex(otherId))
-                                        updateColours()
-
-                                    }else{
-
-                                        val bh = blingHolders.firstOrNull { it.line == lin }
-                                        if (bh!= null){
-                                            addBlinger(
-                                                BlingHolder(lin,bh.firstId, bh.secondId, -1 ){
-
-                                                }
-                                            )
-                                        }
+                    }else{
+                        val lin = levelData.closestLineOrNull(Point(x,y))
+                        if(lin!= null){
+                            val fw = gameNetwork.relationsMatrix[ ellipseIdIndex(lin.fromId)+1, ellipseIdIndex(lin.toId)+1  ]!=0.0
+                            val bw = gameNetwork.relationsMatrix[  ellipseIdIndex(lin.toId)+1 ,ellipseIdIndex(lin.fromId)+1 ]!=0.0
+                            if (bw.xor(fw)){
+                                val (thisId, otherId) = if (fw){
+                                    Pair(lin.fromId, lin.toId)
+                                }else{
+                                    Pair(lin.toId, lin.fromId)
+                                }
+                                addBlinger(
+                                    BlingHolder(lin,thisId, otherId, -1 ){
 
                                     }
+                                )
+                                gameNetwork.cutConnection(ellipseIdIndex(thisId), ellipseIdIndex(otherId))
+                                updateColours()
 
+                            }else{
 
-                                }
-
-
-                                //gameNetwork.updateColours()
-
-                            }
-                        }
-
-
-                    },
-                    dragStart = { x,y->
-                        if(touchStartPoint.value.x != -1.0) {
-                            dragging.value = true
-                        }
-
-
-                        //if(touchStartPoint.value.x!=-1.0){
-                        //    touchEndPoint.value = Point(x,y)
-                        //}
-                    },
-                    drag = {x,y->
-                        if(dragging.value){
-                            touchEndPoint.value = touchEndPoint.value.translated(x,y)
-                        }
-
-                    },
-                    dragEnd = {
-
-                        dragging.value=false
-                        levelData.levelEllipses.firstOrNull {
-                            touchEndPoint.value.distance(it.centre)<0.1
-                        }.let {
-                            if (it!=null){
-                                if(startIndex.value!=it.id){
-                                    val relLine = levelData.lineFromId(startIndex.value,it.id)
-                                    val startIndexValue = startIndex.value
+                                val bh = blingHolders.firstOrNull { it.line == lin }
+                                if (bh!= null){
+                                    //moveCounter.value += 1
                                     addBlinger(
-                                        BlingHolder(relLine,startIndex.value,it.id, 1 ){
-                                            gameNetwork.connect(ellipseIdIndex(startIndexValue), ellipseIdIndex(it.id))
-                                            updateColours()
+                                        BlingHolder(lin,bh.firstId, bh.secondId, -1 ){
+
 
                                         }
                                     )
                                 }
-
-                            }else{
-
                             }
                         }
-                        touchStartPoint.value = Point(-1.0,-1.0)
+                    }
+                }
+            },
+            dragStart = { x,y->
+                if(touchStartPoint.value.x != -1.0) {
+                    dragging.value = true
+                }
+            },
+            drag = {x,y->
+                if(dragging.value){
+                    touchEndPoint.value = touchEndPoint.value.translated(x,y)
+                }
+            },
+            dragEnd = {
+                dragging.value=false
+                levelData.levelEllipses.firstOrNull {
+                    touchEndPoint.value.distance(it.centre)<0.1
+                }.let {
+                    if (it!=null){
+                        if(startIndex.value!=it.id){
+                            val relLine = levelData.lineFromId(startIndex.value,it.id)
+                            val startIndexValue = startIndex.value
+                            addBlinger(
+                                BlingHolder(relLine,startIndex.value,it.id, 1 ){
+                                    moveCounter.value += 1
+                                    gameNetwork.connect(ellipseIdIndex(startIndexValue), ellipseIdIndex(it.id))
+                                    updateColours()
+
+                                }
+                            )
+                        }
+
+                    }else{
 
                     }
-                )
-            )
-
-        }
-
-
-        LaunchedEffect(Unit) {
-            while(true) {
-                delay(50)
-
-                blingHolders.forEach { it.nextLight() }
-                blingHolders.removeAll { it.garbage }
+                }
+                touchStartPoint.value = Point(-1.0,-1.0)
             }
-        }
+        )
 
 
+
+        val modifier = if(levelCompleted.value) Modifier else  dm
         Canvas(modifier = Modifier
             .fillMaxSize()
-            .then(dm.value)
+            .then(modifier)
             .clipToBounds()
         ){
             levelData.drawDecor(this)
-
-
-
-
-
             val defLineColour = Color(0.1f,.1f,.1f)
             levelData.levelLines.forEach {
                 val givenLineColour = gameNetwork.getConnectionChromini(ellipseIdIndex(it.toId),ellipseIdIndex(it.fromId))?.generateColour()
@@ -320,8 +286,8 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
 
                 val blinging = blingHolders.firstOrNull { it2-> it2.line == it }
                 for (i in 1 until it.allPoints.size){
-                    val c = if(blinging?.isLit(i)?: false){
-                        gameNetwork.getFillColor(ellipseIdIndex(blinging!!.firstId)) ?: defLineColour
+                    val c = if(blinging?.isLit(i) == true){
+                        gameNetwork.getFillColor(ellipseIdIndex(blinging.firstId)) ?: defLineColour
                     }else{
                         givenLineColour?: defLineColour
 
@@ -394,28 +360,6 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
                         touchEndPoint.value.scale(this.size.width,this.size.height).offset
                     )
                 }
-
-
-
-
-
-                /*
-                drawRect(
-                    color = Color(0.3f,0.05f,0.2f),
-                    topLeft = it.textRect.topLeft.scale(this.size.width,this.size.height).offset,
-                    size = Size(it.textRect.w*this.size.width, it.textRect.h*this.size.height).androidSize
-
-
-                )
-
-                 */
-
-
-
-
-
-
-
             }
         }
     }
@@ -429,13 +373,15 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
         if (levelCompleted.value){
 
         }else{
-            Box(modifier = Modifier
-                .background(Color.Black)
-                .size(levelSize.width.dp, levelSize.height.dp)){
 
-                levelCanvas(context)
+        }
 
-            }
+        Box(modifier = Modifier
+            .background(Color.Black)
+            .size(levelSize.width.dp, levelSize.height.dp)){
+
+            levelCanvas(context)
+
         }
 
 
