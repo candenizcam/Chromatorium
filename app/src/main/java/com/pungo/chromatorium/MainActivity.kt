@@ -1,6 +1,5 @@
 package com.pungo.chromatorium
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,10 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.pungo.chromatorium.fifthTest.FifthTest
-import com.pungo.chromatorium.fourthTest.FourthTest
+import com.pungo.chromatorium.game.GameApp
 import com.pungo.chromatorium.tools.drawBackground
-import com.pungo.chromatorium.ui.theme.ChromatoriumTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -30,7 +27,7 @@ class MainActivity : ComponentActivity() {
             //SecondTest()
             //ThirdTest()
             //FourthTest()
-            FifthTest()
+            GameApp()
             //IzelinThingi()
 
         }
@@ -48,16 +45,3 @@ fun IzelinThingi(){
 }
 
 
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ChromatoriumTheme {
-        Greeting("Android")
-    }
-}

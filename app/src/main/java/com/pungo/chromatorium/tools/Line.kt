@@ -92,8 +92,6 @@ class Line(val p1: Point, val p2: Point) {
         val p1Dist = p1.distance(closestPoint)
         val p2Dist = p2.distance(closestPoint)
 
-        val pl = p1Dist+p2Dist
-        val leng = length()
         return if(p1Dist+p2Dist<=length()){
             closestPoint
         }else{
@@ -111,8 +109,6 @@ class Line(val p1: Point, val p2: Point) {
      * this function does not look at the boundaries, only the direction
      */
     fun splitsPoints(p1: Point, p2: Point): Boolean {
-        val yd1 = yFromX(p1.x) - p1.y
-        val yd2 = yFromX(p2.x) - p2.y
         val s1 = sign(yFromX(p1.x) - p1.y)
         val s2 = sign(yFromX(p2.x) - p2.y)
         if((s1==0.0).or(s2==0.0)){
