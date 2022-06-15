@@ -22,6 +22,10 @@ class Chromini
     constructor(red: Int, green: Int, blue: Int): this(red/255f, green/255f, blue/255f)
     constructor(color: Color): this(color.red,color.green,color.blue)
 
+    val useLightText: Boolean
+    get() {
+        return (red*0.299 + green*0.587 + blue*0.114) < 186.0/255.8
+    }
 
     val rgbIntString: String
         get(){
