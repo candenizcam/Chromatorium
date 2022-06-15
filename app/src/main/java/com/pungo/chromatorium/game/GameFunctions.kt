@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import com.pungo.chromatorium.R
+import com.pungo.chromatorium.game.levelOpener.NodeType
 import com.pungo.chromatorium.tools.Point
 import com.pungo.chromatorium.tools.dragModifier
 
@@ -144,10 +145,12 @@ fun BoxScope.levelCanvas(context: Context, gameLevel: GameLevel, dm: Modifier, d
 
         levelData.levelEllipses.forEachIndexed {index, it->
             gameNetwork.getBorderChromini(index).let {it2->
+                val v = if(it.nodeType == NodeType.NONE)  5f else 10f
                 if(it2!=null){
                     drawCircle(
                         color = it2.generateColour(),
-                        radius = ((it.diametre*this.size.width).toFloat())/2f+ 10f,
+
+                        radius = ((it.diametre*this.size.width).toFloat())/2f+ v,
                         center = it.centre.scale(this.size.width,this.size.height).offset
                     )
                 }
