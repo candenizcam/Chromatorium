@@ -2,6 +2,7 @@ package com.pungo.chromatorium.game
 
 import android.content.Context
 import android.graphics.Paint
+import android.media.MediaPlayer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -32,10 +33,17 @@ fun drawGameV(gameLevel: GameLevel){
     val levelData = gameLevel.levelData
     val gameNetwork = gameLevel.gameNetwork
 
+    val disconnectSound = MediaPlayer.create(LocalContext.current, R.raw.disconnect)
+    val connectedSound = MediaPlayer.create(LocalContext.current, R.raw.connect)
+    //connectedSound.isLooping = true
+    connectedSound.isLooping = true
+
     val dm = dragModifier(
         firstContact = {x: Float,y: Float->
             gameLevel.levelData.closestEllipseOrNull(Point(x,y)).let {
                 if (it!=null){
+
+
                     touchStartPoint.value = Point(x,y)
                     touchEndPoint.value = Point(it.centre.x, it.centre.y)
                     startIndex.value = it.id
@@ -50,6 +58,7 @@ fun drawGameV(gameLevel: GameLevel){
                             }else{
                                 Pair(lin.toId, lin.fromId)
                             }
+                            disconnectSound.start()
                             gameLevel.addBlinger(
                                 BlingHolder(lin,thisId, otherId, -1 ){
 
@@ -60,6 +69,7 @@ fun drawGameV(gameLevel: GameLevel){
                         }else{
                             val bh = gameLevel.blingHolders.firstOrNull { it.line == lin }
                             if (bh!= null){
+
                                 gameLevel.addBlinger(
                                     BlingHolder(lin,bh.firstId, bh.secondId, -1 ){}
                                 )
@@ -72,15 +82,20 @@ fun drawGameV(gameLevel: GameLevel){
         dragStart = { _,_->
             if(touchStartPoint.value.x != -1.0) {
                 dragging.value = true
+
             }
         },
         drag = {x,y->
             if(dragging.value){
                 touchEndPoint.value = touchEndPoint.value.translated(x,y)
+
+
             }
         },
         dragEnd = {
+            //connectedSound.pause()
             dragging.value = false
+
             levelData.levelEllipses.firstOrNull {
                 touchEndPoint.value.distance(it.centre)<it.diametre*0.8
             }.let {
@@ -89,8 +104,12 @@ fun drawGameV(gameLevel: GameLevel){
                         val relLine = levelData.lineFromId(startIndex.value,it.id)
                         if (relLine!=null){
                             val startIndexValue = startIndex.value
+                            connectedSound.start()
                             gameLevel.addBlinger(
+
                                 BlingHolder(relLine,startIndexValue,it.id, 1 ){
+                                    connectedSound.pause()
+                                    //connectedSound.pause()
                                     gameLevel.moveCounter.value += 1
                                     val id1 = gameLevel.ellipseIdIndex(startIndexValue)
                                     val id2 =  gameLevel.ellipseIdIndex(it.id)
@@ -166,6 +185,9 @@ fun BoxScope.levelCanvas(context: Context, gameLevel: GameLevel, dm: Modifier, d
                     center = it.centre.scale(this.size.width,this.size.height).offset
                 )
 
+                val s = this.size.height
+
+
                 if(it2!=null){
                     drawContext.canvas.nativeCanvas.apply {
                         drawText(
@@ -174,7 +196,7 @@ fun BoxScope.levelCanvas(context: Context, gameLevel: GameLevel, dm: Modifier, d
                             ((it.textRect.bottom)*this@Canvas.size.height).toFloat(),
                             Paint().apply {
                                 letterSpacing = -0.1f
-                                textSize = 30f
+                                textSize = 30f/880f*s
                                 color = it2.generateColour().toArgb()
                                 textAlign = Paint.Align.CENTER
                                 typeface = ResourcesCompat.getFont(context , R.font.sharetechmonoregular)
