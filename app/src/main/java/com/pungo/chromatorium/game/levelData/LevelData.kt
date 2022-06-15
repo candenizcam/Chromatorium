@@ -14,12 +14,6 @@ class LevelData(val levelNo: String, val width: Int, val height: Int, val levelE
     }
 
 
-
-
-
-
-
-
     fun ellipseFromId(id: String): LevelEllipseData {
         return levelEllipses.firstOrNull {it.id == id }!!
     }
@@ -52,9 +46,6 @@ class LevelData(val levelNo: String, val width: Int, val height: Int, val levelE
                 null
             }
         }
-
-
-
     }
 
 
