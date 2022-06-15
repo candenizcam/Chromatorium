@@ -51,6 +51,11 @@ open class Matrix(val values: MutableList<Double>, val rowNo: Int, val colNo: In
         }
     }
 
+
+
+
+
+
     /** returns sum for A + A^2 + A^3 ...
      *
      */
@@ -60,6 +65,14 @@ open class Matrix(val values: MutableList<Double>, val rowNo: Int, val colNo: In
         var powerHolder = Matrix.unitMatrix(rowNo)
         for (i in 1..n){
             powerHolder = powerHolder * this
+
+            for(i in 0 until u.values.size){
+                if(u.values[i]>1.0){
+                    powerHolder.values[i] = 0.0
+                }
+                //powerHolder.values[i] = powerHolder.values[i].coerceIn(0.0..1.0)
+            }
+
 
             /*
             for(i in 0 until powerHolder.values.size){
