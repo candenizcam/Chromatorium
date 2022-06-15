@@ -60,6 +60,16 @@ open class Matrix(val values: MutableList<Double>, val rowNo: Int, val colNo: In
         var powerHolder = Matrix.unitMatrix(rowNo)
         for (i in 1..n){
             powerHolder = powerHolder * this
+
+            /*
+            for(i in 0 until powerHolder.values.size){
+                powerHolder.values[i] = powerHolder.values[i].coerceIn(0.0..1.0)
+            }
+
+             */
+
+            //powerHolder.values.forEach {
+            //}
             if(powerHolder .frobenius()>0.001){
                 u += powerHolder
             }else{
