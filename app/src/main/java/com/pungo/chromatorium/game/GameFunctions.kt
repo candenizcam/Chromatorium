@@ -82,22 +82,25 @@ fun drawGameV(gameLevel: GameLevel){
         dragEnd = {
             dragging.value = false
             levelData.levelEllipses.firstOrNull {
-                touchEndPoint.value.distance(it.centre)<0.1
+                touchEndPoint.value.distance(it.centre)<it.diametre*0.8
             }.let {
                 if (it!=null){
                     if(startIndex.value!=it.id){
                         val relLine = levelData.lineFromId(startIndex.value,it.id)
-                        val startIndexValue = startIndex.value
-                        gameLevel.addBlinger(
-                            BlingHolder(relLine,startIndexValue,it.id, 1 ){
-                                gameLevel.moveCounter.value += 1
-                                val id1 = gameLevel.ellipseIdIndex(startIndexValue)
-                                val id2 =  gameLevel.ellipseIdIndex(it.id)
+                        if (relLine!=null){
+                            val startIndexValue = startIndex.value
+                            gameLevel.addBlinger(
+                                BlingHolder(relLine,startIndexValue,it.id, 1 ){
+                                    gameLevel.moveCounter.value += 1
+                                    val id1 = gameLevel.ellipseIdIndex(startIndexValue)
+                                    val id2 =  gameLevel.ellipseIdIndex(it.id)
 
-                                gameNetwork.connect(id1,id2)
-                                gameLevel.updateColours()
-                            }
-                        )
+                                    gameNetwork.connect(id1,id2)
+                                    gameLevel.updateColours()
+                                }
+                            )
+                        }
+
                     }
                 }
             }

@@ -18,14 +18,14 @@ class LevelData(val levelNo: String, val width: Int, val height: Int, val levelE
         return levelEllipses.firstOrNull {it.id == id }!!
     }
 
-    fun lineFromId(id1: String, id2: String): LevelLineData{
-        return levelLines.firstOrNull { (it.fromId == id1 && it.toId == id2).or(it.fromId == id2 && it.toId == id1) }!!
+    fun lineFromId(id1: String, id2: String): LevelLineData?{
+        return levelLines.firstOrNull { (it.fromId == id1 && it.toId == id2).or(it.fromId == id2 && it.toId == id1) }
     }
 
 
     fun closestEllipseOrNull(p: Point): LevelEllipseData? {
         return levelEllipses.firstOrNull {
-            it.centre.distance(p)<0.1
+            it.centre.distance(p)< it.diametre*0.6
         }
     }
 
