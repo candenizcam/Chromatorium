@@ -4,7 +4,7 @@ import com.pungo.chromatorium.game.levelData.*
 import kotlin.math.max
 import kotlin.math.min
 
-class RawLevelData(ellipseLine: String, lineLine: String, paddingCoeff: Float = 9.0f/4.0f){
+class RawLevelData(levelName: String, ellipseLine: String, lineLine: String, paddingCoeff: Float = 9.0f/4.0f){
     val levelNo: String
     val left: Int
     val top: Int
@@ -12,9 +12,27 @@ class RawLevelData(ellipseLine: String, lineLine: String, paddingCoeff: Float = 
     val bottom: Int
     val width: Int
     val height: Int
+    val levelTitle: String
+    val star3: Int
+    val star2: Int
     val theseEllipses: List<RawEllipseData>
     val theseLines: List<RawLineData>
     init {
+
+
+        val ln = levelName.split(":")
+        val (title, s3, s2) = (1..3).map{i->
+            try{
+                ln[i]
+            }catch(e: Exception) {
+                "-1"
+            }
+        }
+        levelTitle = title
+        star3 = s3.toInt()
+        star2 = s2.toInt()
+
+
         theseEllipses = ellipseLine.split(";").map { RawEllipseData(it) }
         theseLines = lineLine.split(";").map { RawLineData(it) }
         levelNo = (100 - theseEllipses[0].opacity.toInt()).toString()

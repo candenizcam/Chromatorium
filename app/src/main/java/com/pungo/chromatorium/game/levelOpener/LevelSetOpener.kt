@@ -17,9 +17,10 @@ class LevelSetOpener() {
         val lines = s.lines()
         val ellipseLines = lines.filter { it.subSequence(0,4)=="ell." }
         val lineLines = lines.filter { it.subSequence(0,4)=="lin:" }
+        val levelId = lines.filter { it.subSequence(0,4) == "lev" }
         val rawDecorEllipses = lines.filter { it.subSequence(0,6)=="decor." }.first().split(";").map { RawDecorEllipseData(it) }
         val rawDecorLines = lines.filter{it.length>8}.filter { it.subSequence(0,7)=="declin:" }.first().split(";").map { RawLineData(it) }
-        val levels = ellipseLines.indices.map { RawLevelData(ellipseLines[it],lineLines[it]) }
+        val levels = ellipseLines.indices.map { RawLevelData(levelId[it],ellipseLines[it],lineLines[it]) }
         val levelDataList = mutableListOf<LevelData>()
         for(i in levels.indices){
             val thisLevelRaw = levels[i]
