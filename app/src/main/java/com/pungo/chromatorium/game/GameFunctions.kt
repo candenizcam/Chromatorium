@@ -35,6 +35,10 @@ fun drawGameV(gameLevel: GameLevel){
 
 
 
+
+
+
+    /*
     val disconnectSound = remember{ mutableStateOf(
         MediaPlayer.create(context, R.raw.disconnect)
     ) }
@@ -45,11 +49,13 @@ fun drawGameV(gameLevel: GameLevel){
         mutableStateOf(MediaPlayer.create(context, R.raw.connect))
 
     }
+
+     */
     //connectedSound.value.prepare()
 
 
     //connectedSound.isLooping = true
-    connectedSound.value.isLooping = true
+    //connectedSound.value.isLooping = true
 
     val dm = dragModifier(
         firstContact = {x: Float,y: Float->
@@ -71,7 +77,7 @@ fun drawGameV(gameLevel: GameLevel){
                             }else{
                                 Pair(lin.toId, lin.fromId)
                             }
-                            disconnectSound.value.start()
+                            //disconnectSound.value.start()
                             gameLevel.addBlinger(
                                 BlingHolder(lin,thisId, otherId, -1 ){
 
@@ -117,11 +123,11 @@ fun drawGameV(gameLevel: GameLevel){
                         val relLine = levelData.lineFromId(startIndex.value,it.id)
                         if (relLine!=null){
                             val startIndexValue = startIndex.value
-                            connectedSound.value.start()
+                            //connectedSound.value.start()
                             gameLevel.addBlinger(
 
                                 BlingHolder(relLine,startIndexValue,it.id, 1 ){
-                                    connectedSound.value.pause()
+                                    //connectedSound.value.pause()
                                     //connectedSound.pause()
                                     gameLevel.moveCounter.value += 1
                                     val id1 = gameLevel.ellipseIdIndex(startIndexValue)
