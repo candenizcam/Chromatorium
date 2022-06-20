@@ -45,6 +45,8 @@ fun drawGameV(gameLevel: GameLevel){
         mutableStateOf(MediaPlayer.create(context, R.raw.connect))
 
     }
+    //connectedSound.value.prepare()
+
 
     //connectedSound.isLooping = true
     connectedSound.value.isLooping = true

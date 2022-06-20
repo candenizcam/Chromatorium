@@ -28,16 +28,37 @@ class GameNetwork(chrominiList: List<String>, val typeList: List<NodeType>) {
 
 
     fun updateColours(){
-        val pss = relationsMatrix.powerSeriesSum(20)
+        //val pss = relationsMatrix.powerSeriesSum(20)
         var r = sourceList.map { it?:Chromini.black }
 
         typeList.forEachIndexed { index, nodeType ->
 
             if (nodeType ==NodeType.SOURCE){
-                val v = Matrix(1,networkSize)
+                var v = Matrix(1,networkSize)
                 v[1,index+1] = 1.0
+                var u = v.copy()
+                for (i in 1..10){
+                    val v2 = v*relationsMatrix
 
-                val m = v*pss
+                    u += v2
+                    v = v2
+                    for (i in u.values.indices){
+                        if (u.values[i] > 1.0){
+                            u.values[i] = 1.0
+                            v.values[i] = 0.0
+                        }
+                    }
+
+                    if (v.frobenius()==0.0){
+                        break
+                    }
+
+
+                }
+
+
+                val m = u.copy()
+                //val m = v*pss
                 r = MutableList(networkSize){
                     r[it] + sourceList[index]!! * m[1,it+1]
                 }
