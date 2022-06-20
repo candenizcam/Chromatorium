@@ -6,7 +6,7 @@ import com.pungo.chromatorium.tools.Point
 import com.pungo.chromatorium.tools.Size
 
 
-class LevelData(val levelNo: String, val width: Int, val height: Int, val levelEllipses: List<LevelEllipseData>, val decorEllipses: List<DecorEllipseData>, val levelLines: List<LevelLineData>, val decorLines: List<DecorLineData>){
+class LevelData(val levelTitle: String, val star3: Int, val star2: Int, val levelNo: String, val width: Int, val height: Int, val levelEllipses: List<LevelEllipseData>, val decorEllipses: List<DecorEllipseData>, val levelLines: List<LevelLineData>, val decorLines: List<DecorLineData>){
 
     val levelSize: Size
     get() {

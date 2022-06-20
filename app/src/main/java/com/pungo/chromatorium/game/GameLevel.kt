@@ -26,6 +26,17 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
 
     }
 
+    fun getStars(): Int {
+        val v = moveCounter.value
+        return if (v>levelData.star2){
+            1
+        }else if(v>levelData.star3){
+            2
+        }else{
+            3
+        }
+    }
+
 
     fun addBlinger(b: BlingHolder){
         val b2 = blingHolders.firstOrNull { it.line == b.line }

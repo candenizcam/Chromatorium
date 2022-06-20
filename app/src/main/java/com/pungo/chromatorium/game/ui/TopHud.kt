@@ -23,40 +23,44 @@ import com.pungo.chromatorium.tools.height1920
 import com.pungo.chromatorium.tools.width1080
 
 @Composable
-fun BoxScope.TopHud(hudTop: Double, levelChromini: Chromini, activeLevel: Int){
+fun BoxScope.TopHud(hudTop: Double, levelChromini: Chromini, activeLevel: Int, activeTitle: String){
     Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceBetween){
 
         Box(modifier = Modifier
             .fillMaxHeight()
-            .width((hudTop).dp)
-            .clickable {
-                // back button
+            .width(width1080(387).dp)
+
+        ) {
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .width(width1080(hudTop*2.5).dp)
+                .clickable {
+                    // back button
+
+                }
+            ) {
+                Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
+
+                    drawCircle(Color.White, 3*36f/1080f*this.size.width , Point(this.size.width*0.8,this.size.height/2.0).offset)
+
+                    drawCircle(
+                        Color.White, 1.5f*36f/1080f*this.size.width ,
+                        Point(this.size.width*0.55,this.size.height/2.0).offset)
+
+                    drawCircle(
+                        Color.White, 1.5f*36f/1080f*this.size.width ,
+                        Point(this.size.width*0.4,this.size.height/2.0).offset)
+
+                    drawCircle(
+                        Color.White, 1.5f*36f/1080f*this.size.width ,
+                        Point(this.size.width*0.25,this.size.height/2.0).offset)
+
+                    drawCircle(
+                        Color.White, 1.5f*36f/1080f*this.size.width ,
+                        Point(this.size.width*0.1,this.size.height/2.0).offset)
+                })
 
             }
-        ){
-            Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
-
-                drawCircle(Color.White, 3*36f/1080f*this.size.width , Point(this.size.width*0.8,this.size.height/2.0).offset)
-
-                drawCircle(
-                    Color.White, 1.5f*36f/1080f*this.size.width ,
-                    Point(this.size.width*0.55,this.size.height/2.0).offset)
-
-                drawCircle(
-                    Color.White, 1.5f*36f/1080f*this.size.width ,
-                    Point(this.size.width*0.4,this.size.height/2.0).offset)
-
-                drawCircle(
-                    Color.White, 1.5f*36f/1080f*this.size.width ,
-                    Point(this.size.width*0.25,this.size.height/2.0).offset)
-
-                drawCircle(
-                    Color.White, 1.5f*36f/1080f*this.size.width ,
-                    Point(this.size.width*0.1,this.size.height/2.0).offset)
-            })
-
-
-
         }
 
 
@@ -72,7 +76,7 @@ fun BoxScope.TopHud(hudTop: Double, levelChromini: Chromini, activeLevel: Int){
 
         ) {
 
-            Text("LEVEL ${activeLevel+1}", fontFamily = FontFamily(
+            Text(activeTitle.uppercase(), fontFamily = FontFamily(
                 Font(R.font.sharetechmonoregular, FontWeight.Normal)
             ),
                 fontSize = height1920(v = 36).sp,
@@ -92,8 +96,17 @@ fun BoxScope.TopHud(hudTop: Double, levelChromini: Chromini, activeLevel: Int){
 
         Box(modifier = Modifier
             .fillMaxHeight()
-            .width((hudTop).dp)
+            .width(width1080(387).dp),
+            contentAlignment = Alignment.CenterEnd
         ) {
+            Text("Level ${activeLevel+1}  ",
+                fontFamily = FontFamily(
+                    Font(R.font.sharetechmonoregular, FontWeight.Normal)
+                ),
+                fontSize = height1920(v = 56).sp,
+                letterSpacing = width1080(0).sp,
+                color = if(levelChromini.useLightText) Color.White else Color.Black
+            )
         }
     }
 }

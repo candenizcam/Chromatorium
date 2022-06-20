@@ -137,7 +137,7 @@ fun GameApp() {
                 , contentAlignment = Alignment.Center){
 
 
-                TopHud(hudTop = hudTop, levelChromini = levelChromini, activeLevel = activeLevel)
+                TopHud(hudTop = hudTop, levelChromini = levelChromini, activeLevel = activeLevel, activeTitle = levelSetOpener.gameLevels[activeLevel].levelData.levelTitle)
             }
 
 
@@ -159,7 +159,7 @@ fun GameApp() {
 
                     }
                 }else{
-                    BetweenLevels(timeRecorder.value, activeLevel+1, levelSetOpener.gameLevels[activeLevel].moveCounter.value,levelChromini,3,
+                    BetweenLevels(timeRecorder.value, activeLevel+1, levelSetOpener.gameLevels[activeLevel].moveCounter.value,levelChromini,levelSetOpener.gameLevels[activeLevel].getStars(),
                         nextLevel = {
                             timeRecorder.value = 0.0
                             activeLevel += 1

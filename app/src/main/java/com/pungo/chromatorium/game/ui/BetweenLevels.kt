@@ -66,6 +66,9 @@ fun BetweenLevels(timeRecorder: Double, levelNo: Int, moves: Int, chromini: Chro
 
             ) {
 
+                // 1: middle
+                // 2: centre
+                // 3: right
                 //val vector = ImageVector.vectorResource(id = R.drawable.ic_spark)
                 //val painter = rememberVectorPainter(image = vector)
                 val ib = ImageVector.vectorResource(R.drawable.ic_spark)
@@ -74,7 +77,10 @@ fun BetweenLevels(timeRecorder: Double, levelNo: Int, moves: Int, chromini: Chro
                     Column(modifier = Modifier
                         .width(width1080(v = 90).dp)
                         .fillMaxHeight(), verticalArrangement = Arrangement.Bottom) {
-                        Image(painter = painter, contentDescription = "s1")
+                        if (stars>1){
+                            Image(painter = painter, contentDescription = "s1")
+                        }
+
                     }
                     Column(modifier = Modifier
                         .width(width1080(v = 90).dp)
@@ -84,7 +90,10 @@ fun BetweenLevels(timeRecorder: Double, levelNo: Int, moves: Int, chromini: Chro
                     Column(modifier = Modifier
                         .width(width1080(v = 90).dp)
                         .fillMaxHeight(), verticalArrangement = Arrangement.Bottom) {
-                        Image(painter = painter, contentDescription = "s3")
+                        if (stars>2){
+                            Image(painter = painter, contentDescription = "s3")
+                        }
+
                     }
                 }
 
