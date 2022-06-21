@@ -39,6 +39,7 @@ fun BetweenLevels(timeRecorder: Double, levelNo: Int, moves: Int, chromini: Chro
         //pathEffect = PathEffect.dashPathEffect(floatArrayOf(1f, 18f), 0f)
     )
 
+    val texts = listOf("Not Bad!","Success!","Perfect!")
 
     Box(
         Modifier
@@ -100,7 +101,7 @@ fun BetweenLevels(timeRecorder: Double, levelNo: Int, moves: Int, chromini: Chro
 
 
 
-                TextDecorator(text = "Perfect!", fontSize = 96)
+                TextDecorator(text =  texts[stars-1] , fontSize = 96)
                 TextDecorator(text = "Level ${levelNo} Complete!", fontSize = 56, modifier = Modifier.padding(0.dp, 0.dp, 0.dp, height1920(v = 36).dp))
 
                 Row(modifier = Modifier
