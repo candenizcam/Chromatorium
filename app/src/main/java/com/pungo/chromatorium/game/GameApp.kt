@@ -120,7 +120,7 @@ fun GameApp() {
             // game
             Box(modifier = Modifier
                 .fillMaxSize()
-                , contentAlignment = Alignment.BottomCenter) {
+                , contentAlignment = Alignment.Center) {
                 drawGameV(gameLevel = levelSetOpener.gameLevels[activeLevel])
             }
             val levelChromini = levelSetOpener.gameLevels[activeLevel].levelData.levelEllipses.firstOrNull { it.nodeType==NodeType.SINK }?.fillColour.let {
