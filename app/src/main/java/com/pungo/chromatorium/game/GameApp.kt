@@ -2,31 +2,18 @@ package com.pungo.chromatorium.game
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.DrawStyle
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.pungo.chromatorium.R
 import com.pungo.chromatorium.game.levelOpener.LevelSetOpener
 import com.pungo.chromatorium.game.levelOpener.NodeType
@@ -38,12 +25,32 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun GameApp() {
-    var loadedString by remember {
+    val hudTop = height1920(v = 200)
+    val hudBottom = height1920(v = 100)
+    val screenSize = Size(LocalConfiguration.current.screenWidthDp, LocalConfiguration.current.screenHeightDp-hudTop.toInt()-hudBottom.toInt())
+    //var loadedString by remember {
+    //    mutableStateOf(false)
+    //}
+    var activeLevelComplete by remember{
         mutableStateOf(false)
     }
+    var activeLevelMoveCounter by remember{
+        mutableStateOf(0)
+    }
+    var activeLevelBlingers = remember{
+        mutableStateListOf<BlingHolder>()
+    }
+
     val levelSetOpener by remember{
         mutableStateOf(
-            LevelSetOpener()
+            LevelSetOpener(LevelStrings.levelList[0],screenSize, levelMutation = { mutator ->
+                activeLevelComplete = mutator.levelCompleted
+                activeLevelMoveCounter = mutator.moveCounter
+                activeLevelBlingers.clear()
+                activeLevelBlingers.addAll(mutator.blingHolders)
+
+            })
+
         )
     }
     var activeLevel by rememberSaveable{
@@ -56,28 +63,15 @@ fun GameApp() {
         mutableStateOf(false)
     }
 
-    val hudTop = height1920(v = 200)
-    val hudBottom = height1920(v = 100)
 
-
-    val screenSize = Size(LocalConfiguration.current.screenWidthDp, LocalConfiguration.current.screenHeightDp-hudTop.toInt()-hudBottom.toInt())
-
-
-    ReadDataFileWithCallback(path = "batches/batch_1.txt"){
-        levelSetOpener.deploy(it)
-        levelSetOpener.generateGameLevels(screenSize)
-        loadedString = true
-        //activeLevel = 0
-    }
 
 
     LaunchedEffect(Unit) {
         while(true) {
             delay(50)
             try {
-                levelSetOpener.gameLevels[activeLevel].blingHolders.forEach { it.nextLight() }
-                levelSetOpener.gameLevels[activeLevel].blingHolders.removeAll { it.garbage }
-                if(!levelSetOpener.gameLevels[activeLevel].levelCompleted.value){
+                levelSetOpener.updateBlingers(activeLevel)
+                if(!levelSetOpener.activeLevelComplete(activeLevel)){
                     timeRecorder.value += 0.05
                 }
 
@@ -94,7 +88,7 @@ fun GameApp() {
 
 
 
-    if(!loadedString){
+    if(false){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(text = "loading")
         }
@@ -114,14 +108,14 @@ fun GameApp() {
                 .fillMaxWidth()
                 .height(hudBottom.dp)
                 .align(Alignment.BottomCenter)) {
-                BottomHud(hudBottom = hudBottom, moveCounter = levelSetOpener.gameLevels[activeLevel].moveCounter.value)
+                BottomHud(hudBottom = hudBottom, moveCounter = activeLevelMoveCounter)
             }
 
             // game
             Box(modifier = Modifier
                 .fillMaxSize()
                 , contentAlignment = Alignment.Center) {
-                drawGameV(gameLevel = levelSetOpener.gameLevels[activeLevel])
+                drawGameV(gameLevel = levelSetOpener.gameLevels[activeLevel], activeLevelBlingers)
             }
             val levelChromini = levelSetOpener.gameLevels[activeLevel].levelData.levelEllipses.firstOrNull { it.nodeType==NodeType.SINK }?.fillColour.let {
                 if (it==null){
@@ -141,7 +135,7 @@ fun GameApp() {
             }
 
 
-            if (levelSetOpener.gameLevels[activeLevel].levelCompleted.value){
+            if (activeLevelComplete){
 
                 if (eye.value){
                     Box(
@@ -159,7 +153,7 @@ fun GameApp() {
 
                     }
                 }else{
-                    BetweenLevels(timeRecorder.value, activeLevel+1, levelSetOpener.gameLevels[activeLevel].moveCounter.value,levelChromini,levelSetOpener.gameLevels[activeLevel].getStars(),
+                    BetweenLevels(timeRecorder.value, activeLevel+1, activeLevelMoveCounter,levelChromini,levelSetOpener.gameLevels[activeLevel].getStars(),
                         nextLevel = {
                             timeRecorder.value = 0.0
                             activeLevel += 1

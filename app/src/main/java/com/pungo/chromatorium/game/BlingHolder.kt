@@ -7,16 +7,20 @@ import kotlin.math.abs
 /** Holds bling for dotted lines
  *
  */
-class BlingHolder(val line: LevelLineData, val firstId: String, val secondId: String, val step: Int = 1, val finished: ()->Unit) {
+class BlingHolder(val line: LevelLineData, val firstId: String, val secondId: String, val step: Int = 1, val mutated: (Int)->Unit, val finished: ()->Unit  ) {
 
-    var lit = mutableStateOf(0)
+    var lit = 0
+    set(value) {
+        field = value
+        //mutated(field)
+    }
     var garbage = false
     val forward = line.fromId == firstId
 
     fun nextLight(){
 
-        lit.value+= abs(step)
-        if (lit.value>=line.allPoints.size){
+        lit += abs(step)
+        if (lit >=line.allPoints.size){
             finished()
             garbage = true
         }
@@ -25,16 +29,16 @@ class BlingHolder(val line: LevelLineData, val firstId: String, val secondId: St
     fun isLit(n: Int): Boolean {
         return if (step>0){
             if(forward){
-                n<=lit.value
+                n<=lit
             }else{
-                line.allPoints.size - lit.value <= n
+                line.allPoints.size - lit <= n
             }
         }else{
             if(forward){
-                line.allPoints.size - lit.value >= n
+                line.allPoints.size - lit >= n
                 //n>=lit.value
             }else{
-                n>=lit.value
+                n>=lit
             }
         }
 

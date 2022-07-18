@@ -7,10 +7,14 @@ import com.pungo.chromatorium.game.levelData.LevelData
 import com.pungo.chromatorium.game.levelData.LevelEllipseData
 import com.pungo.chromatorium.tools.Size
 
-class LevelSetOpener() {
+class LevelSetOpener(s: String, screenSize: Size,val levelMutation: (mutator: GameLevel.Mutator)->Unit) {
     var levelString = ""
     val gameLevels = mutableListOf<GameLevel>()
     val gameLevelDatas = mutableListOf<LevelData>()
+    init {
+        deploy(s)
+        generateGameLevels(screenSize)
+    }
 
     fun deploy(s: String){
         levelString = s
@@ -66,7 +70,16 @@ class LevelSetOpener() {
      * possibly saved data
      */
     fun generateGameLevels(playfieldSize: Size){
-        gameLevels.addAll(gameLevelDatas.map { GameLevel(it,playfieldSize) })
+        gameLevels.addAll(gameLevelDatas.map { GameLevel(it,playfieldSize, levelMutation) })
+    }
+
+    fun updateBlingers(activeLevel: Int){
+        gameLevels[activeLevel].updateBlingers()
+
+    }
+
+    fun activeLevelComplete(activeLevel: Int): Boolean {
+        return gameLevels[activeLevel].levelCompleted
     }
 }
 

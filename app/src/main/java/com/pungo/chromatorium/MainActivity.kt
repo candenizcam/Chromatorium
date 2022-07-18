@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.pungo.chromatorium.R
 import com.pungo.chromatorium.game.GameApp
 import com.pungo.chromatorium.tools.drawBackground
 

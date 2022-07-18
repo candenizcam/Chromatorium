@@ -1,14 +1,17 @@
 package com.pungo.chromatorium.game
 
-import androidx.compose.runtime.*
 import com.pungo.chromatorium.game.levelData.LevelData
+import com.pungo.chromatorium.game.levelData.LevelLineData
 import com.pungo.chromatorium.game.levelOpener.NodeType
 import com.pungo.chromatorium.tools.Size
 import java.util.*
 
-class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
+class GameLevel(val levelData: LevelData, val gameFieldSize: Size,
+                val mutation: (Mutator) -> Unit
+) {
     val levelSize: Size = levelData.levelSize.scaleToFit(gameFieldSize)
-    val blingHolders =  mutableStateListOf<BlingHolder>() //mutableListOf<BlingHolder>()
+    //val blingHolders =  mutableStateListOf<BlingHolder>() //mutableListOf<BlingHolder>()
+    val blingHolders = mutableListOf<BlingHolder>()
 
     val gameNetwork = GameNetwork(
         levelData.levelEllipses.map {
@@ -18,16 +21,30 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
             it.nodeType
         }
     )
-    var moveCounter = mutableStateOf(0)
-    var levelCompleted = mutableStateOf(false)
+    var moveCounter = 0
+    set(value) {
+        field = value
+        mutation(Mutator(moveCounter,levelCompleted, blingHolders.toList()))
+    }
+    //var levelCompleted = mutableStateOf(false)
+    var levelCompleted = false
+    set(value) {
+        field = value
+        mutation(Mutator(moveCounter,levelCompleted, blingHolders.toList()))
+    }
+
+    data class Mutator(val moveCounter: Int, val levelCompleted: Boolean, val blingHolders: List<BlingHolder>)
+
+
 
     init {
+
 
 
     }
 
     fun getStars(): Int {
-        val v = moveCounter.value
+        val v = moveCounter
         return if (v>levelData.star2){
             1
         }else if(v>levelData.star3){
@@ -38,16 +55,23 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
     }
 
 
-    fun addBlinger(b: BlingHolder){
+    fun addBlinger(lin: LevelLineData, thisId: String, otherId: String, step: Int,finished: ()->Unit ){
+        val b = BlingHolder(lin,thisId, otherId, step , mutated = {
+            mutation(Mutator(moveCounter,levelCompleted, blingHolders.toList()))
+
+        },finished)
+
+
         val b2 = blingHolders.firstOrNull { it.line == b.line }
         if (b2!=null){
             blingHolders.remove(b2)
+            mutation(Mutator(moveCounter,levelCompleted, blingHolders.toList()))
             if( b.firstId == b2.firstId){
 
                 if ((b.step >0).xor(b2.step>0)){
-                    b.lit.value = b.line.allPoints.size - b2.lit.value
+                    b.lit = b.line.allPoints.size - b2.lit
                 }else{
-                    b.lit.value = b2.lit.value
+                    b.lit = b2.lit
                 }
 
 
@@ -57,6 +81,7 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
             b
 
         )
+        mutation(Mutator(moveCounter,levelCompleted, blingHolders.toList()))
     }
 
 
@@ -75,8 +100,8 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
     fun resetLevel(){
         gameNetwork.resetConnections()
         gameNetwork.updateColours()
-        levelCompleted.value = false
-        moveCounter.value = 0
+        levelCompleted = false
+        moveCounter = 0
     }
 
 
@@ -105,7 +130,12 @@ class GameLevel(val levelData: LevelData, val gameFieldSize: Size) {
 
     fun updateColours(){
         gameNetwork.updateColours()
-        levelCompleted.value = levelComplete()
+        levelCompleted = levelComplete()
     }
 
+    fun updateBlingers(){
+        blingHolders.forEach { it.nextLight() }
+        blingHolders.removeAll { it.garbage }
+        mutation(Mutator(moveCounter, levelCompleted, blingHolders.toList()))
+    }
 }

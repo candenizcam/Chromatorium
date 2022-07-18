@@ -1,7 +1,5 @@
 package com.pungo.chromatorium.game.levelData
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.pungo.chromatorium.tools.Point
 import com.pungo.chromatorium.tools.Size
 
@@ -52,30 +50,5 @@ class LevelData(val levelTitle: String, val star3: Int, val star2: Int, val leve
 
 
 
-
-    fun drawDecor(context: DrawScope){
-        context.drawDecorContext()
-    }
-
-    fun DrawScope.drawDecorContext(){
-        decorEllipses.forEach {
-            drawCircle(
-                color = Color(0.85f,0.85f,0.85f,.1f),
-                radius = (it.diametre*this.size.width).toFloat()/2f,
-                center = it.centre.scale(this.size.width,this.size.height).offset
-            )
-        }
-
-        decorLines.forEach {
-            for (i in 1 until it.points.size){
-                drawLine(
-                    color = Color(0.85f,0.85f,0.85f,.1f),
-                    it.points[i-1].scale(this.size.width,this.size.height).offset,
-                    it.points[i].scale(this.size.width,this.size.height).offset,
-                    strokeWidth = 5f
-                )
-            }
-        }
-    }
 }
 

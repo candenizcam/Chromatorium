@@ -2,7 +2,6 @@ package com.pungo.chromatorium.game
 
 import android.content.Context
 import android.graphics.Paint
-import android.media.MediaPlayer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.nativeCanvas
@@ -24,7 +24,7 @@ import com.pungo.chromatorium.tools.Point
 import com.pungo.chromatorium.tools.dragModifier
 
 @Composable
-fun drawGameV(gameLevel: GameLevel){
+fun drawGameV(gameLevel: GameLevel, activeLevelBlingers: SnapshotStateList<BlingHolder>){
     val context = LocalContext.current
     val (touchStartPoint, touchEndPoint, startIndex) = remember{
         Triple(mutableStateOf(Point(-1.0,-1.0)), mutableStateOf(Point(0.0,0.0)), mutableStateOf(""))
@@ -78,11 +78,7 @@ fun drawGameV(gameLevel: GameLevel){
                                 Pair(lin.toId, lin.fromId)
                             }
                             //disconnectSound.value.start()
-                            gameLevel.addBlinger(
-                                BlingHolder(lin,thisId, otherId, -1 ){
-
-                                }
-                            )
+                            gameLevel.addBlinger(lin,thisId, otherId, -1){}
                             gameNetwork.cutConnection(gameLevel.ellipseIdIndex(thisId), gameLevel.ellipseIdIndex(otherId))
                             gameLevel.updateColours()
                         }else{
@@ -90,8 +86,8 @@ fun drawGameV(gameLevel: GameLevel){
                             if (bh!= null){
 
                                 gameLevel.addBlinger(
-                                    BlingHolder(lin,bh.firstId, bh.secondId, -1 ){}
-                                )
+                                    lin,bh.firstId, bh.secondId, -1
+                                ){}
                             }
                         }
                     }
@@ -124,19 +120,17 @@ fun drawGameV(gameLevel: GameLevel){
                         if (relLine!=null){
                             val startIndexValue = startIndex.value
                             //connectedSound.value.start()
-                            gameLevel.addBlinger(
+                            gameLevel.addBlinger(relLine,startIndexValue,it.id, 1
+                            ) {
+                                //connectedSound.value.pause()
+                                //connectedSound.pause()
+                                gameLevel.moveCounter += 1
+                                val id1 = gameLevel.ellipseIdIndex(startIndexValue)
+                                val id2 = gameLevel.ellipseIdIndex(it.id)
 
-                                BlingHolder(relLine,startIndexValue,it.id, 1 ){
-                                    //connectedSound.value.pause()
-                                    //connectedSound.pause()
-                                    gameLevel.moveCounter.value += 1
-                                    val id1 = gameLevel.ellipseIdIndex(startIndexValue)
-                                    val id2 =  gameLevel.ellipseIdIndex(it.id)
-
-                                    gameNetwork.connect(id1,id2)
-                                    gameLevel.updateColours()
-                                }
-                            )
+                                gameNetwork.connect(id1, id2)
+                                gameLevel.updateColours()
+                            }
                         }
 
                     }
@@ -149,25 +143,52 @@ fun drawGameV(gameLevel: GameLevel){
     Box(modifier = Modifier
         .size(gameLevel.levelSize.width.dp, gameLevel.levelSize.height.dp)){
 
-        levelCanvas(context,gameLevel ,dm, dragging.value, touchStartPoint.value,touchEndPoint.value)
+        levelCanvas(context,gameLevel ,dm, dragging.value, touchStartPoint.value,touchEndPoint.value,activeLevelBlingers)
     }
 }
 
 
 @Composable
-fun BoxScope.levelCanvas(context: Context, gameLevel: GameLevel, dm: Modifier, dragging: Boolean, touchStartPoint: Point, touchEndPoint: Point  ) {
+fun BoxScope.levelCanvas(context: Context, gameLevel: GameLevel, dm: Modifier, dragging: Boolean, touchStartPoint: Point, touchEndPoint: Point, activeLevelBlingers: SnapshotStateList<BlingHolder>  ) {
     val levelData = gameLevel.levelData
     val gameNetwork = gameLevel.gameNetwork
     Canvas(modifier = Modifier
         .fillMaxSize()
-        .then(if (gameLevel.levelCompleted.value) Modifier else dm)
+        .then(if (gameLevel.levelCompleted) Modifier else dm)
         //.clipToBounds()
     ){
-        levelData.drawDecor(this)
+
+
+
+        levelData.decorEllipses.forEach {
+            drawCircle(
+                color = Color(0.85f,0.85f,0.85f,.1f),
+                radius = (it.diametre*this.size.width).toFloat()/2f,
+                center = it.centre.scale(this.size.width,this.size.height).offset
+            )
+        }
+
+        levelData.decorLines.forEach {
+            for (i in 1 until it.points.size){
+                drawLine(
+                    color = Color(0.85f,0.85f,0.85f,.1f),
+                    it.points[i-1].scale(this.size.width,this.size.height).offset,
+                    it.points[i].scale(this.size.width,this.size.height).offset,
+                    strokeWidth = 5f
+                )
+            }
+        }
+
+
+
+
+
+
+
         val defLineColour = Color(0.9f,.9f,.9f)
         levelData.levelLines.forEach {
             val givenLineColour = gameNetwork.getConnectionChromini(gameLevel.ellipseIdIndex(it.toId),gameLevel.ellipseIdIndex(it.fromId))?.generateColour()
-            val blinging = gameLevel.blingHolders.firstOrNull { it2-> it2.line == it }
+            val blinging = activeLevelBlingers.firstOrNull { it2-> it2.line == it }
             for (i in 1 until it.allPoints.size){
                 val c = if(blinging?.isLit(i) == true){
                     gameNetwork.getFillColor(gameLevel.ellipseIdIndex(blinging.firstId))
